@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+
+{% block title %}Enter Details - AMR{% endblock %}
+
+{% block content %}
+<div>
+    <!-- Back Button -->
+    {% if service.category == 'landscaping' %}
+        <a href="{{ url_for('time_selection', year=selected_date.year, month=selected_date.month, day=selected_date.day) }}" class="back-button">
+            ←
+        </a>
+    {% else %}
+        <a href="{{ url_for('time_selection', year=selected_date.year, month=selected_date.month, day=selected_date.day) }}" class="back-button-blue">
+            ←
+        </a>
+    {% endif %}
+    
+    <!-- Form Header -->
+    <h1 class="mb-4" style="color: white; font-weight: bold;">Enter Details</h1>
+    
+    <!-- Booking Form -->
+    <form method="POST" action="{{ url_for('submit_booking') }}">
+        <!-- Name Fields -->
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <label for="first_name" class="form-label">First Name *</label>
+                <input type="text" class="form-control" id="first_name" name="first_name" required>
+            </div>
+            <div class="col-md-6">
+                <label for="last_name" class="form-label">Last Name *</label>
+                <input type="text" class="form-control" id="last_name" name="last_name" required>
+            </div>
+        </div>
+        
+        <!-- Email -->
+        <div class="mb-3">
+            <label for="email" class="form-label">Email *</label>
+            <input type="email" class="form-control" id="email" name="email" required>
+        </div>
+        
+        <!-- Phone Number -->
+        <div class="mb-3">
+            <label for="phone" class="form-label">Phone Number *</label>
+            <input type="tel" class="form-control" id="phone" name="phone" required>
+        </div>
+        
+        <!-- Home Address -->
+        <div class="mb-4">
+            <label for="address" class="form-label">Home Address *</label>
+            <textarea class="form-control" id="address" name="address" rows="3" required></textarea>
+        </div>
+        
+        <!-- Custom Service Description (if applicable) -->
+        {% if service.is_custom %}
+        <div class="mb-4">
+            <label for="custom_description" class="form-label">Service Description</label>
+            <textarea class="form-control" id="custom_description" name="custom_description" rows="3" 
+                      placeholder="Please describe what landscaping work you need done..."></textarea>
+            <small class="text-muted">
+                Note: Custom services require admin approval. You'll be contacted to confirm duration and pricing.
+            </small>
+        </div>
+        {% endif %}
+        
+        <!-- Terms Agreement -->
+        <div class="mb-4">
+            <p class="text-muted">
+                By proceeding, you confirm that you have read and agree to 
+                {% if service.category == 'landscaping' %}
+                    <a href="#" class="terms-link-landscaping">AMR's Terms of Use</a> and 
+                    <a href="#" class="terms-link-landscaping">Privacy Notice</a>.
+                {% else %}
+                    <a href="#" class="terms-link-pressure">AMR's Terms of Use</a> and 
+                    <a href="#" class="terms-link-pressure">Privacy Notice</a>.
+                {% endif %}
+            </p>
+        </div>
+        
+        <!-- Submit Button with Dynamic Color -->
+        <div class="text-center">
+            {% if service.category == 'landscaping' %}
+                <button type="submit" class="btn-book-appointment">
+                    Book Appointment
+                </button>
+            {% else %}
+                <button type="submit" class="btn-book-appointment-pressure">
+                    Book Appointment
+                </button>
+            {% endif %}
+        </div>
+    </form>
+</div>
+{% endblock %}

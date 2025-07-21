@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+
+{% block title %}Booking Confirmed - AMR{% endblock %}
+
+{% block content %}
+<div style="padding-top: 60px;">
+    <div class="text-center">
+        <!-- AMR Logo (clickable to go home) -->
+        <div class="text-center mb-5">
+            <a href="{{ url_for('index') }}">
+                {% if booking.service_type.category == 'pressure_washing' %}
+                <img src="{{ url_for('static', filename='images/amr_logo2.png') }}" alt="AMR Pressure Washing Logo" style="max-width: 180px; height: auto; border-radius: 20px; cursor: pointer;">
+                {% else %}
+                <img src="{{ url_for('static', filename='images/amr_logo.png') }}" alt="AMR Logo" style="max-width: 180px; height: auto; border-radius: 20px; cursor: pointer;">
+                {% endif %}   
+            </a>
+        </div>
+        
+        <!-- Success Message -->
+        <div class="mb-4">
+            {% if booking.service_type.category == 'landscaping' %}
+                <h1 style="color: #035F0A; font-weight: bold;">You are scheduled</h1>
+            {% else %}
+                <h1 style="color: #7EE0FF; font-weight: bold;">You are scheduled</h1>
+            {% endif %}
+            <p style="color: white;">A calendar invitation has been sent to your email address.</p>
+        </div>
+    
+        <!-- Appointment Details Card -->
+        <div class="confirmation-card">
+            <h3 class="mb-4" style="color: #6c757d;">Appointment</h3>
+            
+            <div class="text-start">
+                <!-- Business Name -->
+                <div class="d-flex align-items-center mb-3">
+                    <i class="bi bi-person-circle me-3" style="font-size: 1.5rem; color: #6c757d;"></i>
+                    <span style="color: #6c757d; font-weight: 500;">AMR Services</span>
+                </div>
+                
+                <!-- Date and Time -->
+                <div class="d-flex align-items-center mb-3">
+                    <i class="bi bi-calendar3 me-3" style="font-size: 1.5rem; color: #6c757d;"></i>
+                    <div>
+                        <div style="color: #6c757d; font-weight: 500;">
+                            {{ booking.start_time.strftime('%I:%M%p')|lower }} - {{ booking.end_time.strftime('%I:%M%p')|lower }},
+                        </div>
+                        <div style="color: #6c757d;">
+                            {{ booking.booking_date.strftime('%A, %B %d, %Y') }}
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Service Type -->
+                <div class="d-flex align-items-center mb-3">
+                    {% if booking.service_type.category == 'landscaping' %}
+                        <i class="bi bi-gear me-3" style="font-size: 1.5rem; color: #035F0A;"></i>
+                        <span style="color: #035F0A; font-weight: 500;">
+                            {% if booking.service_type.name == 'Normal Package' %}
+                                Standard Lawn Service
+                            {% else %}
+                                {{ booking.service_type.name }}
+                            {% endif %}
+                        </span>
+                    {% else %}
+                        <i class="bi bi-gear me-3" style="font-size: 1.5rem; color: #7EE0FF;"></i>
+                        <span style="color: #7EE0FF; font-weight: 500;">{{ booking.service_type.name }}</span>
+                    {% endif %}
+                </div>
+                
+                <!-- Address -->
+                <div class="d-flex align-items-start">
+                    <i class="bi bi-geo-alt me-3" style="font-size: 1.5rem; color: #6c757d;"></i>
+                    <span style="color: #6c757d;">Service will be performed at: {{ booking.user.address }}</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Additional Info -->
+        <div class="mt-4">
+            <p style="color: white;">
+                If you need to reschedule or cancel, please contact AMR Services as soon as possible.
+            </p>
+        </div>
+        
+        <!-- New Appointment Button -->
+        <div class="mt-4">
+            {% if booking.service_type.category == 'landscaping' %}
+                <a href="{{ url_for('index') }}" class="btn-schedule-another btn-schedule-landscaping">
+                    Schedule Another Appointment
+                </a>
+            {% else %}
+                <a href="{{ url_for('index') }}" class="btn-schedule-another btn-schedule-pressure">
+                    Schedule Another Appointment
+                </a>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

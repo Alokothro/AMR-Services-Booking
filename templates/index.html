@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+
+{% block title %}AMR Services - Book Your Appointment{% endblock %}
+
+{% block content %}
+<div class="text-center home-page">
+    <!-- AMR Logo - Clickable for Admin Access -->
+    <div class="text-center mb-5" style="padding-top: 50px;">
+        <img src="{{ url_for('static', filename='images/amr_logo.png') }}" 
+             alt="AMR Logo" 
+             class="admin-logo-access"
+             onclick="handleLogoClick()"
+             style="max-width: 180px; height: auto; border-radius: 15px;">
+    </div>
+
+    <!-- Book Title -->
+    <h1 class="mb-5" style="color: white; font-weight: bold; font-family: 'Arial Black', sans-serif; font-size: 3rem; letter-spacing: 2px;">BOOK</h1>
+    
+    <!-- Service Selection Buttons -->
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-4">
+            <a href="{{ url_for('select_service', service_category='landscaping') }}" class="text-decoration-none">
+                <button class="service-button-custom service-button-landscaping">
+                    <div>🌱</div>
+                    <div class="mt-2">Landscaping</div>
+                </button>
+            </a>
+        </div>
+        <div class="col-md-6 col-lg-4">
+            <a href="{{ url_for('select_service', service_category='pressure_washing') }}" class="text-decoration-none">
+                <button class="service-button-custom service-button-pressure">
+                    <div>💧</div>
+                    <div class="mt-2">Pressure Washing</div>
+                </button>
+            </a>
+        </div>
+    </div>
+
+    <script>
+        function handleLogoClick() {
+            // Only open admin panel if user is already logged in as admin
+            if (isAdmin) {
+                toggleAdminPanel();
+            }
+            // Do nothing for regular users - they don't know admin mode exists
+        }
+    </script>
+</div>
+{% endblock %}

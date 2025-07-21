@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+
+{% block title %}Select Time - AMR{% endblock %}
+
+{% block content %}
+<div>
+    <!-- Back Button -->
+    <div class="text-start">
+        {% if service.category == 'landscaping' %}
+            <a href="{{ url_for('calendar', service_id=service.id) }}" class="back-button">
+                ←
+            </a>
+        {% else %}
+            <a href="{{ url_for('calendar', service_id=service.id) }}" class="back-button-blue">
+                ←
+            </a>
+        {% endif %}
+    </div>
+    
+    <!-- Page Header -->
+    <div class="text-center mb-4">
+        <h1 style="color: white; font-weight: bold;">
+            {{ selected_date.strftime('%A') }}
+        </h1>
+        {% if service.category == 'landscaping' %}
+            <h4 style="color: #035F0A;">{{ selected_date.strftime('%B %d, %Y') }}</h4>
+        {% else %}
+            <h4 style="color: #7EE0FF;">{{ selected_date.strftime('%B %d, %Y') }}</h4>
+        {% endif %}
+    </div>
+    
+    <!-- Time Selection -->
+    <div class="text-center">
+        <h2 class="mb-3" style="color: white; font-weight: bold;">Select a Time</h2>
+        
+        <!-- Available Time Slots -->
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                {% if available_times %}
+                    {% for time_slot in available_times %}
+                    <a href="{{ url_for('booking_form', selected_time=time_slot.strftime('%H:%M')) }}" class="text-decoration-none">
+                        {% if service.category == 'landscaping' %}
+                            <div class="time-slot time-slot-landscaping">
+                                {{ time_slot.strftime('%I:%M%p')|lower }}
+                            </div>
+                        {% else %}
+                            <div class="time-slot time-slot-pressure">
+                                {{ time_slot.strftime('%I:%M%p')|lower }}
+                            </div>
+                        {% endif %}
+                    </a>
+                    {% endfor %}
+                {% else %}
+                    <div class="alert alert-info">
+                        <h5>No available times</h5>
+                        <p>All time slots for this day are booked. Please select another date.</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

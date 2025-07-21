@@ -1,0 +1,3234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}AMR Services - Booking{% endblock %}</title>
+    
+    <!-- Bootstrap CSS for mobile-responsive design -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Google Maps API -->
+    <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBZL9ksZOTO-APIcHaYforvKPy9gTAaKXY&libraries=places&callback=initAutocomplete"></script>  
+    <!-- Custom CSS for AMR branding -->
+<style>
+:root {
+    --amr-green: #28a745;
+    --amr-light-green: #a8d5ba;
+    --amr-dark-green: #1e7e34;
+    --light-gray: #f8f9fa;
+}
+
+/* Black background for everything */
+html, body {
+    background-color: black !important;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+    padding: 0;
+    color: white;
+    padding-top: 0;
+}
+
+/* Clean top navigation with auth buttons */
+.top-nav {
+    position: fixed;
+    top: 0;
+    right: 0;
+    z-index: 1000;
+    padding: 1rem 2rem;
+}
+
+.nav-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    position: relative;
+}
+/* Pricing calculator on the left */
+.pricing-calc-section {
+    display: flex;
+    align-items: center;
+}
+
+/* Auth buttons on the right */
+.auth-buttons {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+}
+
+/* Auth Buttons */
+.auth-buttons {
+    display: flex;
+    gap: 1rem;
+}
+
+.login-btn, .signup-btn {
+    padding: 0.4rem 1rem;
+    border: 2px solid;
+    background: transparent;
+    font-weight: 600;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border-color: white;
+    color: white;
+}
+
+.login-btn:hover, .signup-btn:hover {
+    background-color: white;
+    color: black;
+    transform: translateY(-2px);
+}
+
+/* Pricing Calculator Button - Show on home page */
+.pricing-calc-btn:hover {
+    background-color: transparent;
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(255, 255, 255, 0.2);
+}
+
+/* Show pricing calculator on home page - multiple selectors for reliability */
+body.home-page .pricing-calc-btn,
+.home-page .pricing-calc-btn,
+[data-page="home"] .pricing-calc-btn {
+    display: inline-block !important;
+}
+
+/* Also show when URL is root */
+body[data-url="/"] .pricing-calc-btn {
+    display: inline-block !important;
+}
+
+/* Landscaping page colors */
+.auth-landscaping .login-btn, 
+.auth-landscaping .signup-btn {
+    border-color: #035F0A;
+    color: #035F0A;
+}
+
+.auth-landscaping .login-btn:hover, 
+.auth-landscaping .signup-btn:hover {
+    background-color: #035F0A;
+    color: white;
+    transform: translateY(-2px);
+}
+
+/* Pressure washing page colors */
+.auth-pressure .login-btn, 
+.auth-pressure .signup-btn {
+    border-color: #7EE0FF;
+    color: #7EE0FF;
+}
+
+.auth-pressure .login-btn:hover, 
+.auth-pressure .signup-btn:hover {
+    background-color: #7EE0FF;
+    color: black;
+    transform: translateY(-2px);
+}
+
+.container {
+    background-color: black !important;
+    margin-top: 100px;
+}
+
+.amr-logo {
+    color: var(--amr-green);
+    font-size: 3rem;
+    font-weight: bold;
+    text-align: center;
+    margin: 2rem 0;
+}
+
+.service-button-custom {
+    background-color: white;
+    border: none;
+    border-radius: 15px;
+    padding: 1.5rem;
+    margin: 1rem 0;
+    width: 100%;
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: black;
+    font-family: 'Impact', 'Arial Black', sans-serif;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(255, 255, 255, 0.1);
+}
+
+.service-button-landscaping:hover {
+    background-color: #035F0A;
+    color: white;
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(3, 95, 10, 0.3);
+}
+
+.service-button-pressure:hover {
+    background-color: #7EE0FF;
+    color: black;
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(126, 224, 255, 0.3);
+}
+
+/* Calendar colors for different service types */
+.calendar-day.available.calendar-landscaping {
+    background-color: #035F0A;
+    color: white;
+    cursor: pointer;
+}
+
+.calendar-day.available.calendar-landscaping:hover {
+    background-color: #024A08;
+}
+
+.calendar-day.available.calendar-pressure {
+    background-color: #7EE0FF;
+    color: black;
+    cursor: pointer;
+}
+
+.calendar-day.available.calendar-pressure:hover {
+    background-color: #5AD6FF;
+}
+
+.calendar-day.today {
+    background-color: #FFD700 !important;
+    color: black !important;
+    font-weight: bold;
+    border: 2px solid white;
+}
+
+.calendar-day {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: none;
+    margin: 2px;
+    background-color: white;
+    color: #333;
+    font-weight: 500;
+}
+
+.calendar-day.available {
+    cursor: pointer;
+}
+
+.calendar-day.unavailable {
+    background-color: #e9ecef;
+    color: #6c757d;
+    cursor: not-allowed;
+}
+
+/* Time slot styling for different service types */
+.time-slot-landscaping {
+    background-color: white;
+    border: 2px solid #035F0A;
+    border-radius: 10px;
+    padding: 1rem;
+    margin: 0.5rem 0;
+    text-align: center;
+    font-size: 1.1rem;
+    color: #035F0A;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.time-slot-landscaping:hover {
+    background-color: #035F0A;
+    color: white;
+    border-color: #024A08;
+}
+
+.time-slot-pressure {
+    background-color: white;
+    border: 2px solid #7EE0FF;
+    border-radius: 10px;
+    padding: 1rem;
+    margin: 0.5rem 0;
+    text-align: center;
+    font-size: 1.1rem;
+    color: #7EE0FF;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.time-slot-pressure:hover {
+    background-color: #7EE0FF;
+    color: black;
+    border-color: #5AD6FF;
+}
+
+/* Booking form styling */
+.form-label {
+    color: white;
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+}
+
+.btn-book-appointment {
+    background-color: #035F0A;
+    border: none;
+    color: white;
+    font-weight: 600;
+    padding: 1rem 3rem;
+    border-radius: 10px;
+    font-size: 1.1rem;
+    transition: all 0.3s ease;
+}
+
+.btn-book-appointment:hover {
+    background-color: #024A08;
+    transform: translateY(-2px);
+}
+
+.btn-book-appointment-pressure {
+    background-color: #7EE0FF;
+    border: none;
+    color: black;
+    font-weight: 600;
+    padding: 1rem 3rem;
+    border-radius: 10px;
+    font-size: 1.1rem;
+    transition: all 0.3s ease;
+}
+
+.btn-book-appointment-pressure:hover {
+    background-color: #5AD6FF;
+    color: black;
+    transform: translateY(-2px);
+}
+
+.form-control:focus {
+    border-color: var(--amr-green);
+    box-shadow: 0 0 0 0.2rem rgba(40, 167, 69, 0.25);
+}
+
+/* Back buttons */
+.back-button {
+    background-color: transparent;
+    border: 3px solid #035F0A;
+    color: #035F0A;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    font-size: 1.2rem;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    position: fixed;
+    top: 1rem;
+    left: 2rem;
+    z-index: 1001;
+}
+
+.back-button:hover {
+    background-color: #035F0A;
+    color: white;
+    border-color: #035F0A;
+}
+
+.back-button-blue {
+    background-color: transparent;
+    border: 3px solid #7EE0FF;
+    color: #7EE0FF;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    font-size: 1.2rem;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    position: fixed;
+    top: 1rem;
+    left: 2rem;
+    z-index: 1001;
+}
+
+.back-button-blue:hover {
+    background-color: #7EE0FF;
+    color: black;
+    border-color: #7EE0FF;
+}
+
+/* Service pages */
+.landscaping-title {
+    color: #035F0A;
+    font-weight: bold;
+    font-family: 'Impact', 'Arial Black', sans-serif;
+    letter-spacing: 2px;
+    text-shadow: 0 0 20px rgba(3, 95, 10, 0.3);
+}
+
+.pressure-washing-title {
+    color: #7EE0FF;
+    font-weight: bold;
+    font-family: 'Impact', 'Arial Black', sans-serif;
+    letter-spacing: 2px;
+    text-shadow: 0 0 20px rgba(126, 224, 255, 0.3);
+}
+
+.service-option-card {
+    background-color: white;
+    border-radius: 15px;
+    padding: 2.5rem;
+    margin: 1rem 0;
+    min-height: 100px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(255, 255, 255, 0.1);
+}
+
+.service-option-card:hover {
+    background-color: #035F0A;
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(3, 95, 10, 0.3);
+}
+
+.service-option-card:hover .service-name,
+.service-option-card:hover .service-description {
+    color: white;
+}
+
+.pressure-washing-card {
+    background-color: white;
+    border-radius: 15px;
+    padding: 2.5rem;
+    margin: 1rem 0;
+    min-height: 100px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(255, 255, 255, 0.1);
+}
+
+.pressure-washing-card:hover {
+    background-color: #7EE0FF;
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(126, 224, 255, 0.3);
+}
+
+.pressure-washing-card:hover .service-name,
+.pressure-washing-card:hover .service-description {
+    color: black;
+}
+
+.service-name {
+    color: black;
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+    font-family: 'Segoe UI', sans-serif;
+    font-size: 1.3rem;
+}
+
+.service-description {
+    color: black;
+    margin-bottom: 0;
+    font-weight: 500;
+    font-size: 1rem;
+}
+
+/* Confirmation page */
+.confirmation-card {
+    background-color: white;
+    border-radius: 15px;
+    padding: 2rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    margin: 1rem 0;
+}
+
+.btn-schedule-another {
+    padding: 1rem 2rem;
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 1.1rem;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    display: inline-block;
+}
+
+.btn-schedule-landscaping {
+    background-color: #035F0A;
+    color: white;
+}
+
+.btn-schedule-landscaping:hover {
+    background-color: #024A08;
+    color: white;
+    transform: translateY(-2px);
+}
+
+.btn-schedule-pressure {
+    background-color: #7EE0FF;
+    color: black;
+}
+
+.btn-schedule-pressure:hover {
+    background-color: #5AD6FF;
+    color: black;
+    transform: translateY(-2px);
+}
+
+/* Auto-fade alerts */
+.alert {
+    animation: fadeOutAndCollapse 3s ease-in-out forwards;
+    animation-delay: 0s;
+}
+
+@keyframes fadeOutAndCollapse {
+    0% {
+        opacity: 1;
+        transform: translateY(0);
+        max-height: 100px;
+        margin-bottom: 1rem;
+    }
+    70% {
+        opacity: 1;
+        transform: translateY(0);
+        max-height: 100px;
+        margin-bottom: 1rem;
+    }
+    100% {
+        opacity: 0;
+        transform: translateY(-20px);
+        max-height: 0;
+        margin-bottom: 0;
+        padding: 0;
+        pointer-events: none;
+    }
+}
+
+.alert-success {
+    animation: fadeOutAndCollapse 3.5s ease-in-out forwards;
+}
+
+/* PRICING CALCULATOR STYLES */
+.pricing-modal {
+    background-color: white;
+    border-radius: 15px;
+    border: none;
+    overflow: hidden;
+}
+
+.pricing-modal .modal-header {
+    background-color: white;
+    border-bottom: 1px solid #dee2e6;
+    border-radius: 15px 15px 0 0;
+    text-align: center;
+}
+
+.pricing-modal .modal-title {
+    color: black;
+    font-weight: bold;
+    width: 100%;
+    text-align: center;
+}
+
+.pricing-modal .modal-body {
+    padding: 2rem;
+    background-color: white;
+    border-radius: 0 0 15px 15px;
+}
+
+.calculator-step h4 {
+    color: black;
+    margin-bottom: 1.5rem;
+    text-align: center;
+}
+
+.service-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.calc-service-btn {
+    background-color: white;
+    border: 2px solid black;
+    color: black;
+    padding: 1.5rem 1rem;
+    border-radius: 10px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-align: center;
+}
+
+.calc-service-btn:hover {
+    background-color: black;
+    color: white;
+    transform: translateY(-2px);
+}
+
+.back-calc-btn {
+    background-color: black;
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    cursor: pointer;
+    margin-bottom: 1rem;
+}
+
+.back-calc-btn:hover {
+    background-color: black;
+}
+
+.calc-input-group {
+    margin-bottom: 1.5rem;
+}
+
+.calc-input-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+    color: black !important;
+}
+
+.calc-input-group input,
+.calc-input-group select {
+    width: 100%;
+    padding: 0.75rem;
+    border: 2px solid #dee2e6;
+    border-radius: 8px;
+    font-size: 1rem;
+    color: black;
+    background-color: white;
+}
+
+.calc-input-group input:focus,
+.calc-input-group select:focus {
+    border-color: black;
+    outline: none;
+    box-shadow: 0 0 0 0.2rem rgba(0, 0, 0, 0.25);
+}
+
+.calc-submit-btn {
+    background-color: black;
+    color: white;
+    border: none;
+    padding: 1rem 2rem;
+    border-radius: 10px;
+    font-weight: 600;
+    cursor: pointer;
+    width: 100%;
+    font-size: 1.1rem;
+}
+
+.calc-submit-btn:hover {
+    background-color: #333;
+    transform: translateY(-1px);
+}
+
+.size-buttons {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.size-btn {
+    background-color: white;
+    border: 2px solid black;
+    color: black;
+    padding: 1rem;
+    border-radius: 10px;
+    font-weight: 600;
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.3s ease;
+}
+
+.size-btn:hover,
+.size-btn.selected {
+    background-color: black;
+    color: white;
+}
+
+.price-result {
+    text-align: center;
+}
+
+.price-result h3 {
+    color: black;
+    margin-bottom: 1rem;
+}
+
+.price-display {
+    background: linear-gradient(135deg, black, white);
+    color: white;
+    padding: 2rem;
+    border-radius: 15px;
+    margin-bottom: 1.5rem;
+}
+
+.price-amount {
+    font-size: 3rem;
+    font-weight: bold;
+}
+
+.price-details {
+    background-color: #f8f9fa;
+    padding: 1rem;
+    border-radius: 10px;
+    margin-bottom: 1.5rem;
+    text-align: left;
+    color: black;
+    border: 1px solid #dee2e6;
+}
+
+.calculator-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+}
+
+.btn-book-from-calc {
+    background-color: black;
+    color: white;
+    border: none;
+    padding: 1rem;
+    border-radius: 10px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.btn-book-from-calc:hover {
+    background-color: black;
+    transform: translateY(-1px);
+}
+
+.btn-recalculate {
+    background-color: black;
+    color: white;
+    border: none;
+    padding: 1rem;
+    border-radius: 10px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.btn-recalculate:hover {
+    background-color: black;
+    transform: translateY(-1px);
+}
+
+/* User info display when logged in */
+.user-info {
+    display: none;
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: white;
+}
+
+.auth-landscaping .user-info {
+    color: #035F0A;
+}
+
+.auth-pressure .user-info {
+    color: #7EE0FF;
+}
+
+.logout-btn {
+    background: transparent;
+    border: 2px solid;
+    padding: 0.4rem 1rem;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    margin-left: 1rem;
+    transition: all 0.3s ease;
+    border-color: white;
+    color: white;
+}
+
+.logout-btn:hover {
+    background-color: white;
+    color: black;
+}
+
+.auth-landscaping .logout-btn {
+    border-color: #035F0A;
+    color: #035F0A;
+}
+
+.auth-landscaping .logout-btn:hover {
+    background-color: #035F0A;
+    color: white;
+}
+
+.auth-pressure .logout-btn {
+    border-color: #7EE0FF;
+    color: #7EE0FF;
+}
+
+.auth-pressure .logout-btn:hover {
+    background-color: #7EE0FF;
+    color: black;
+}
+
+/* Admin button styling */
+.admin-btn {
+    background: transparent;
+    border: 2px solid;
+    padding: 0.4rem 1rem;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    margin-left: 1rem;
+    margin-right: 0.5rem;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    border-color: #CE8946;
+    color: #CE8946;
+}
+
+.admin-btn:hover {
+    background-color: #CE8946;
+    color: black;
+}
+
+/* Customer welcome clickable */
+.customer-welcome {
+    cursor: pointer;
+    transition: all 0.3s ease;
+    padding: 0.4rem 1rem;
+    border-radius: 20px;
+}
+
+.customer-welcome:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.auth-landscaping .customer-welcome:hover {
+    background: rgba(3, 95, 10, 0.2);
+}
+
+.auth-pressure .customer-welcome:hover {
+    background: rgba(126, 224, 255, 0.2);
+}
+
+/* Admin Panel Styling - keeping your existing admin styles */
+.admin-panel {
+    position: fixed;
+    top: -100vh;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    background: rgba(20, 20, 20, 0.98);
+    backdrop-filter: blur(10px);
+    border-bottom: 2px solid #CE8946;
+    z-index: 2000;
+    transition: top 0.3s ease;
+    overflow-y: auto;
+    padding: 2rem;
+}
+
+.admin-panel.open {
+    top: 0;
+}
+
+.admin-panel h3 {
+    color: #CE8946;
+    border-bottom: 1px solid #CE8946;
+    padding-bottom: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.admin-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.stat-card {
+    background: rgba(206, 137, 70, 0.1);
+    border: 1px solid rgba(206, 137, 70, 0.3);
+    padding: 1rem;
+    border-radius: 8px;
+    text-align: center;
+}
+
+.stat-number {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #CE8946;
+}
+
+.stat-label {
+    color: white;
+    font-size: 0.8rem;
+    margin-top: 0.5rem;
+}
+
+.booking-item {
+    background: rgba(206, 137, 70, 0.05);
+    border: 1px solid rgba(206, 137, 70, 0.2);
+    padding: 1rem;
+    margin-bottom: 1rem;
+    border-radius: 8px;
+    border-left: 3px solid #CE8946;
+}
+
+.booking-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+}
+
+.customer-name {
+    color: white;
+    font-weight: 600;
+}
+
+.booking-status {
+    padding: 0.2rem 0.5rem;
+    border-radius: 12px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.status-pending { background-color: #FFA500; color: black; }
+.status-confirmed { background-color: #28a745; color: white; }
+.status-completed { background-color: #17a2b8; color: white; }
+.status-cancelled { background-color: #dc3545; color: white; }
+
+.booking-details {
+    color: #ccc;
+    font-size: 0.85rem;
+    line-height: 1.4;
+}
+
+.admin-actions {
+    margin-top: 0.5rem;
+}
+
+.admin-action-btn {
+    padding: 0.2rem 0.5rem;
+    margin-right: 0.5rem;
+    border: none;
+    border-radius: 4px;
+    font-size: 0.7rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn-confirm { background-color: #28a745; color: white; }
+.btn-complete { background-color: #17a2b8; color: white; }
+.btn-cancel { background-color: #dc3545; color: white; }
+
+.admin-action-btn:hover {
+    transform: translateY(-1px);
+    opacity: 0.8;
+}
+
+.admin-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 1999;
+    display: none;
+}
+
+.admin-overlay.show {
+    display: block;
+}
+
+.admin-tabs {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+    justify-content: center;
+}
+
+.admin-tab-btn {
+    padding: 0.5rem 1rem;
+    background: rgba(206, 137, 70, 0.1);
+    border: 1px solid rgba(206, 137, 70, 0.3);
+    color: white;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-size: 0.8rem;
+}
+
+.admin-tab-btn:hover {
+    background: rgba(206, 137, 70, 0.2);
+}
+
+.admin-tab-btn.active {
+    background: #CE8946;
+    color: black;
+    border-color: #CE8946;
+}
+
+.admin-logo-access {
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.admin-logo-access:hover {
+    transform: scale(1.05);
+    filter: drop-shadow(0 0 10px rgba(206, 137, 70, 0.5));
+}
+
+/* Customer Panel Styling */
+.customer-panel {
+    position: fixed;
+    top: -100vh;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    background: rgba(20, 20, 20, 0.98);
+    backdrop-filter: blur(10px);
+    border-bottom: 2px solid white;
+    z-index: 2000;
+    transition: top 0.3s ease;
+    overflow-y: auto;
+    padding: 2rem;
+}
+
+.customer-panel.open {
+    top: 0;
+}
+
+.customer-panel h3 {
+    color: white;
+    border-bottom: 1px solid white;
+    padding-bottom: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.customer-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.customer-stat-card {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    padding: 1rem;
+    border-radius: 8px;
+    text-align: center;
+}
+
+.customer-stat-number {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: white;
+}
+
+.customer-stat-label {
+    color: white;
+    font-size: 0.8rem;
+    margin-top: 0.5rem;
+}
+
+.customer-booking-item {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    padding: 1rem;
+    margin-bottom: 1rem;
+    border-radius: 8px;
+}
+
+.customer-booking-landscaping {
+    border-left: 3px solid #035F0A;
+}
+
+.customer-booking-pressure {
+    border-left: 3px solid #7EE0FF;
+}
+
+.customer-booking-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+}
+
+.customer-service-name {
+    font-weight: 600;
+    font-size: 1rem;
+}
+
+.customer-service-landscaping {
+    color: #035F0A;
+}
+
+.customer-service-pressure {
+    color: #7EE0FF;
+}
+
+.customer-booking-details {
+    color: #ccc;
+    font-size: 0.85rem;
+    line-height: 1.4;
+}
+
+.customer-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 1999;
+    display: none;
+}
+
+.customer-overlay.show {
+    display: block;
+}
+
+/* Auth Modal Styling */
+.auth-modal {
+    background-color: rgba(20, 20, 20, 0.95);
+    border: 2px solid #035F0A;
+    border-radius: 15px;
+    color: white;
+}
+
+.auth-modal .modal-header {
+    border-bottom: 1px solid #035F0A;
+}
+
+.auth-modal .modal-title {
+    color: #035F0A;
+    font-weight: bold;
+}
+
+.auth-modal .form-label {
+    color: white;
+    font-weight: 500;
+}
+
+.auth-modal .form-control {
+    background-color: rgba(255, 255, 255, 0.1);
+    border: 1px solid #035F0A;
+    color: white;
+}
+
+.auth-modal .form-control:focus {
+    background-color: rgba(255, 255, 255, 0.15);
+    border-color: #035F0A;
+    box-shadow: 0 0 0 0.2rem rgba(3, 95, 10, 0.25);
+    color: white;
+}
+
+.auth-modal .form-control::placeholder {
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.btn-login, .btn-signup {
+    background-color: #035F0A;
+    border: none;
+    color: white;
+    font-weight: 600;
+    padding: 0.75rem;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+.btn-login:hover, .btn-signup:hover {
+    background-color: #024A08;
+    color: white;
+    transform: translateY(-1px);
+}
+/* Recurring Booking Modal Styles */
+.recurring-modal {
+    background-color: white;
+    border-radius: 15px;
+    border: none;
+}
+
+.recurring-modal .modal-header {
+    background-color: white;
+    border-bottom: 1px solid #dee2e6;
+    border-radius: 15px 15px 0 0;
+}
+
+.recurring-modal .modal-title {
+    color: black;
+    font-weight: bold;
+}
+
+.booking-options {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin: 1.5rem 0;
+}
+
+.booking-option-card {
+    background: white;
+    border: 2px solid #dee2e6;
+    border-radius: 10px;
+    padding: 1.5rem;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.booking-option-card:hover,
+.booking-option-card.selected {
+    border-color: #035F0A;
+    background-color: #f8f9fa;
+    transform: translateY(-2px);
+}
+
+.booking-option-card h6 {
+    color: black;
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+}
+
+.booking-option-card p {
+    color: #666;
+    margin: 0;
+    font-size: 0.9rem;
+}
+
+.recurring-frequency {
+    margin: 1rem 0;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.recurring-frequency input[type="number"] {
+    border: 1px solid #dee2e6;
+    border-radius: 5px;
+    padding: 0.5rem;
+    text-align: center;
+}
+
+.recurring-frequency select {
+    border: 1px solid #dee2e6;
+    border-radius: 5px;
+    padding: 0.5rem;
+}
+
+.frequency-presets {
+    display: flex;
+    gap: 0.5rem;
+    margin: 1rem 0;
+}
+
+.preset-btn {
+    background: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 20px;
+    padding: 0.5rem 1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.preset-btn:hover,
+.preset-btn.active {
+    background: #035F0A;
+    color: white;
+    border-color: #035F0A;
+}
+
+/* Photo Upload Modal Styles */
+.photo-modal {
+    background-color: white;
+    border-radius: 15px;
+    border: none;
+}
+
+.photo-modal .modal-header {
+    background-color: #035F0A;
+    color: white;
+    border-radius: 15px 15px 0 0;
+}
+
+.photo-modal .modal-title {
+    color: white;
+    font-weight: bold;
+}
+
+.photo-modal .btn-close {
+    filter: invert(1);
+}
+
+.upload-zone {
+    border: 2px dashed #035F0A;
+    border-radius: 10px;
+    padding: 3rem;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-bottom: 1rem;
+}
+
+.upload-zone:hover {
+    border-color: #024A08;
+    background-color: rgba(3, 95, 10, 0.05);
+}
+
+.upload-zone.dragover {
+    border-color: #024A08;
+    background-color: rgba(3, 95, 10, 0.1);
+}
+
+.upload-content {
+    color: #035F0A;
+}
+
+.upload-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    color: #035F0A;
+}
+
+.upload-content h6 {
+    margin-bottom: 0.5rem;
+    color: #035F0A;
+}
+
+.upload-content p {
+    color: #666;
+    margin: 0;
+}
+
+.photo-preview {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.photo-item {
+    position: relative;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.photo-item img {
+    width: 100%;
+    height: 120px;
+    object-fit: cover;
+}
+
+.photo-remove {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    background: rgba(220, 53, 69, 0.9);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 25px;
+    height: 25px;
+    cursor: pointer;
+    font-size: 0.8rem;
+}
+
+.upload-tips {
+    background: #f8f9fa;
+    border-radius: 8px;
+    padding: 1rem;
+    margin-top: 1rem;
+}
+
+.upload-tips h6 {
+    color: #035F0A;
+    margin-bottom: 0.5rem;
+}
+
+.upload-tips ul {
+    margin: 0;
+    padding-left: 1.2rem;
+}
+
+.upload-tips li {
+    color: #666;
+    font-size: 0.9rem;
+    margin-bottom: 0.3rem;
+}
+
+/* Service-specific recurring modal styling */
+.recurring-modal.landscaping {
+    border: 3px solid #035F0A;
+}
+
+.recurring-modal.pressure {
+    border: 3px solid #7EE0FF;
+}
+
+.recurring-modal.landscaping .booking-option-card.selected,
+.recurring-modal.landscaping .booking-option-card:hover {
+    border-color: #035F0A;
+    background-color: rgba(3, 95, 10, 0.1);
+}
+
+.recurring-modal.pressure .booking-option-card.selected,
+.recurring-modal.pressure .booking-option-card:hover {
+    border-color: #7EE0FF;
+    background-color: rgba(126, 224, 255, 0.1);
+}
+
+/* Continue button styling */
+.recurring-modal .btn-primary {
+    background-color: black !important;
+    border-color: black !important;
+    color: white !important;
+}
+
+.recurring-modal .btn-primary:hover {
+    background-color: #333 !important;
+    border-color: #333 !important;
+}
+
+/* Preset buttons for landscaping */
+.recurring-modal.landscaping .preset-btn:hover,
+.recurring-modal.landscaping .preset-btn.active {
+    background: #035F0A;
+    color: white;
+    border-color: #035F0A;
+}
+/* Preset buttons for pressure washing */
+.recurring-modal.pressure .preset-btn:hover,
+.recurring-modal.pressure .preset-btn.active {
+    background: #7EE0FF;
+    color: black;
+    border-color: #7EE0FF;
+}
+/* Modal border colors */
+.recurring-modal.landscaping .modal-content {
+    border: 3px solid #035F0A;
+}
+
+.recurring-modal.pressure .modal-content {
+    border: 3px solid #7EE0FF;
+}
+
+/* Radio buttons for pressure washing */
+.recurring-modal.pressure input[type="radio"]:checked + label {
+    color: #7EE0FF;
+    font-weight: bold;
+}
+/* Fix Google Maps autocomplete z-index and styling */
+.pac-container {
+    z-index: 10000 !important;
+    background-color: white !important;
+    border: 1px solid #ccc !important;
+    border-radius: 8px !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
+    margin-top: 1px !important;
+}
+
+.pac-item {
+    padding: 12px 16px !important;
+    border-bottom: 1px solid #e9ecef !important;
+    cursor: pointer !important;
+    font-size: 14px !important;
+    line-height: 1.4 !important;
+}
+
+.pac-item:hover {
+    background-color: #f8f9fa !important;
+}
+
+.pac-item:last-child {
+    border-bottom: none !important;
+}
+/* Default styling */
+.pac-item:hover {
+    background-color: #f8f9fa !important;
+}
+
+.pac-item:last-child {
+    border-bottom: none !important;
+}
+
+.pac-item:hover {
+    background-color: #f8f9fa !important;
+}
+
+.pac-item:last-child {
+    border-bottom: none !important;
+}
+
+.pac-item-query {
+    font-weight: 600 !important;
+    color: #333 !important;
+}
+
+.pac-matched {
+    font-weight: bold !important;
+    color: #333 !important;
+}
+
+.pac-item {
+    color: #333 !important; /* Everything black */
+}
+
+/* Ensure modal doesn't interfere */
+.modal {
+    z-index: 1050;
+}
+
+.modal-backdrop {
+    z-index: 1040;
+}
+/* Fix green text in pricing calculator */
+.deck-fence-options h4 {
+    margin: 0 0 10px 0 !important;
+    color: black !important;
+}
+
+.calc-result .specialty-price {
+    font-size: 1.5rem !important;
+    font-weight: bold !important;
+    color: black !important;
+}
+
+/* Mobile responsive adjustments */
+@media (max-width: 768px) {
+    .nav-container {
+        padding: 0 1rem;
+    }
+    
+    .auth-buttons {
+    display: flex;
+    gap: 1rem;
+    margin-left: auto; /* This keeps auth buttons on the right */
+    }
+    
+    .login-btn, .signup-btn {
+        padding: 0.4rem 1rem;
+        font-size: 0.9rem;
+    }
+    
+    .pricing-calc-btn {
+        padding: 0.4rem 1rem;
+        font-size: 0.8rem;
+    }
+    
+    .auth-modal .modal-dialog {
+        margin: 1rem;
+    }
+    
+    .admin-panel {
+        width: 100%;
+        right: -100%;
+    }
+    
+    .admin-stats {
+        grid-template-columns: 1fr;
+    }
+    
+    .admin-tabs {
+        flex-wrap: wrap;
+    }
+    
+    .service-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .size-buttons {
+        grid-template-columns: 1fr;
+    }
+    
+    .calculator-actions {
+        grid-template-columns: 1fr;
+    }
+    
+    .price-amount {
+        font-size: 2rem;
+    }
+}
+/* Add this CSS to force the pricing calculator button to the far left: */
+.pricing-calc-btn {
+background-color: transparent;
+color: white;
+border: 2px solid white;
+padding: 0.4rem 1rem;
+border-radius: 20px;
+font-weight: 600;
+cursor: pointer;
+transition: all 0.3s ease;
+font-size: 0.9rem;
+display: none;
+/* Force to far left */
+position: fixed !important;
+left: 2rem !important;
+top: 1rem !important;
+z-index: 1001 !important;
+/* Fix the fat button issue */
+width: auto !important;
+height: auto !important;
+white-space: nowrap !important;
+}
+.pricing-calc-btn:hover {
+background-color: white;
+color: black;
+transform: translateY(-2px);
+box-shadow: 0 4px 8px rgba(255, 255, 255, 0.2);
+}
+/* Push other buttons to the right to avoid overlap */
+.auth-buttons {
+margin-left: 200px !important;
+}
+</style>
+</head>
+<body>
+    <!-- Clean Top Navigation with Auth Buttons Only -->
+    <nav class="top-nav">
+        <div class="nav-container">
+            <!-- Pricing Calculator on the Left -->
+            <div class="pricing-calc-section">
+                <button class="pricing-calc-btn" data-bs-toggle="modal" data-bs-target="#pricingModal">
+                    Price Calculator
+                </button>
+            </div>
+            
+            <!-- Auth buttons on the Right -->
+            <div class="auth-buttons">
+                <button class="login-btn" data-bs-toggle="modal" data-bs-target="#loginModal">LOGIN</button>
+                <button class="signup-btn" data-bs-toggle="modal" data-bs-target="#signupModal">SIGNUP</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Pricing Calculator Modal -->
+    <div class="modal fade" id="pricingModal" tabindex="-1" aria-labelledby="pricingModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content pricing-modal">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="pricingModalLabel">Pricing Calculator</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <!-- Step 1: Service Selection -->
+                    <div id="step1" class="calculator-step">
+                        <h4>What service do you need?</h4>
+                        <div class="service-grid">
+                            <button class="calc-service-btn" onclick="selectService('landscaping', 'Standard Lawn Service')">
+                                Standard Lawn Service
+                            </button>
+                            <button class="calc-service-btn" onclick="selectService('landscaping', 'Mulching')">
+                                Mulching
+                            </button>
+                            <button class="calc-service-btn" onclick="selectService('landscaping', 'Hedge Trimming')">
+                                Hedge Trimming
+                            </button>
+                            <button class="calc-service-btn" onclick="selectService('landscaping', 'Specialty Lawn Care')">
+                                Specialty Lawn Care
+                            </button>
+                            <button class="calc-service-btn" onclick="selectService('landscaping', 'Custom Landscaping')">
+                                Custom Landscaping
+                            </button>
+                            <button class="calc-service-btn" onclick="selectService('pressure_washing', 'Full House Pressure Washing')">
+                                Full House Pressure Washing
+                            </button>
+                            <button class="calc-service-btn" onclick="selectService('pressure_washing', 'Driveway Pressure Washing')">
+                                Driveway Pressure Washing
+                            </button>
+                            <button class="calc-service-btn" onclick="selectService('pressure_washing', 'Patio Pressure Washing')">
+                                Patio Pressure Washing
+                            </button>
+                            <button class="calc-service-btn" onclick="selectService('pressure_washing', 'Deck & Fence Pressure Washing')">
+                                Deck & Fence Pressure Washing
+                            </button>
+                            <button class="calc-service-btn" onclick="selectService('pressure_washing', 'Window Cleaning')">
+                                Window Cleaning
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Step 2: Service-Specific Questions -->
+                    <div id="step2" class="calculator-step" style="display: none;">
+                        <button class="back-calc-btn" onclick="goBackToStep1()">← Back</button>
+                        <h4 id="step2Title">Service Details</h4>
+                        <div id="step2Content">
+                            <!-- Dynamic content will be inserted here -->
+                        </div>
+                    </div>
+
+                    <!-- Step 3: Price Result -->
+                    <div id="step3" class="calculator-step" style="display: none;">
+                        <button class="back-calc-btn" onclick="goBackToStep2()">← Back</button>
+                        <div class="price-result">
+                            <h3>Estimated Price</h3>
+                            <div class="price-display">
+                                <span class="price-amount" id="finalPrice">$0</span>
+                            </div>
+                            <div class="price-details" id="priceBreakdown">
+                                <!-- Price breakdown will be shown here -->
+                            </div>
+                            <div class="disclaimer">
+                                <p><strong>Note:</strong> This is an estimate only. Final pricing may vary based on actual conditions and service requirements.</p>
+                            </div>
+                            <div class="calculator-actions">
+                                <button class="btn-book-from-calc" onclick="redirectToBooking()">
+                                    Book This Service
+                                </button>
+                                <button class="btn-recalculate" onclick="startOver()">
+                                    Calculate Again
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Login Modal -->
+    <div class="modal fade" id="loginModal" tabindex="-1" aria-labelledby="loginModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content auth-modal">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="loginModalLabel">Login to AMR Services</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="loginForm">
+                        <div class="mb-3">
+                            <label for="loginEmail" class="form-label">Email</label>
+                            <input type="email" class="form-control" id="loginEmail" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="loginPassword" class="form-label">Password</label>
+                            <input type="password" class="form-control" id="loginPassword" required>
+                        </div>
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-login">Login</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Signup Modal -->
+    <div class="modal fade" id="signupModal" tabindex="-1" aria-labelledby="signupModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content auth-modal">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="signupModalLabel">Sign Up for AMR Services</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="signupForm">
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="signupFirstName" class="form-label">First Name</label>
+                                <input type="text" class="form-control" id="signupFirstName" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="signupLastName" class="form-label">Last Name</label>
+                                <input type="text" class="form-control" id="signupLastName" required>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="signupEmail" class="form-label">Email</label>
+                            <input type="email" class="form-control" id="signupEmail" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="signupPhone" class="form-label">Phone Number</label>
+                            <input type="tel" class="form-control" id="signupPhone" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="signupAddress" class="form-label">Home Address</label>
+                            <textarea class="form-control" id="signupAddress" rows="3" required></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="signupPassword" class="form-label">Password</label>
+                            <input type="password" class="form-control" id="signupPassword" required>
+                        </div>
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-signup">Sign Up</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- Flash Messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ 'success' if category == 'success' else 'danger' }} alert-dismissible fade show mt-3">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+        
+        <!-- Main Content -->
+        {% block content %}{% endblock %}
+    </div>
+
+    <!-- Customer Panel -->
+    <div class="customer-overlay" id="customerOverlay" onclick="closeCustomerPanel()"></div>
+    <div class="customer-panel" id="customerPanel">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h3>My Bookings</h3>
+            <button onclick="closeCustomerPanel()" style="background: none; border: none; color: white; font-size: 1.5rem;">&times;</button>
+        </div>
+        
+        <!-- Customer Stats -->
+        <div class="customer-stats" id="customerStats">
+            <!-- Stats will be loaded here -->
+        </div>
+        
+        <!-- Customer Content -->
+        <div id="customerContent">
+            <!-- Content will be loaded here -->
+        </div>
+    </div>
+
+    <!-- Admin Panel -->
+    <div class="admin-overlay" id="adminOverlay" onclick="closeAdminPanel()"></div>
+    <div class="admin-panel" id="adminPanel">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h3>Admin Dashboard</h3>
+            <button onclick="closeAdminPanel()" style="background: none; border: none; color: #CE8946; font-size: 1.5rem;">&times;</button>
+        </div>
+        
+        <!-- Admin Stats -->
+        <div class="admin-stats" id="adminStats">
+            <!-- Stats will be loaded here -->
+        </div>
+        
+        <!-- Admin Tabs -->
+        <div class="admin-tabs mb-3">
+            <button class="admin-tab-btn active" onclick="showAdminTab('today')">Today</button>
+            <button class="admin-tab-btn" onclick="showAdminTab('pending')">Pending</button>
+            <button class="admin-tab-btn" onclick="showAdminTab('recent')">Recent</button>
+            <button class="admin-tab-btn" onclick="showAdminTab('customers')">Customers</button>
+        </div>
+        
+        <!-- Admin Content -->
+        <div id="adminContent">
+            <!-- Content will be loaded here -->
+        </div>
+    </div>
+    
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Custom JavaScript -->
+    <script>
+        // User authentication system - Backend Integration
+        let currentUser = null;
+        let isAdmin = false;
+
+        // Pricing Calculator Variables
+        let selectedService = null;
+        let selectedCategory = null;
+
+        // Enhanced home page detection and pricing button management
+        function ensurePricingButtonVisibility() {
+            const isHomePage = document.body.classList.contains('home-page') || 
+                              document.querySelector('.home-page') !== null ||
+                              window.location.pathname === '/' ||
+                              window.location.pathname === '/index' ||
+                              window.location.href.endsWith('/');
+            
+            const pricingBtn = document.querySelector('.pricing-calc-btn');
+            
+            if (isHomePage && pricingBtn) {
+                pricingBtn.style.display = 'inline-block';
+                console.log('✅ Pricing calculator button shown on home page');
+            } else if (pricingBtn) {
+                pricingBtn.style.display = 'none';
+                console.log('❌ Pricing calculator button hidden (not home page)');
+            }
+        }
+
+        // Load user data on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            loadCurrentUser();
+            setAuthButtonColors();
+            
+            // Add body class for home page detection
+            if (window.location.pathname === '/' || window.location.pathname === '/index') {
+                document.body.classList.add('home-page');
+            }
+            
+            // Ensure pricing button visibility
+            setTimeout(ensurePricingButtonVisibility, 100);
+        });
+
+        // PRICING CALCULATOR FUNCTIONS
+        function selectService(category, serviceName) {
+            selectedService = serviceName;
+            selectedCategory = category;
+            
+            // Hide step 1, show step 2
+            document.getElementById('step1').style.display = 'none';
+            document.getElementById('step2').style.display = 'block';
+            
+            // Update step 2 title
+            document.getElementById('step2Title').textContent = serviceName;
+            
+            // Generate appropriate content for step 2
+            const content = generateStep2Content(serviceName);
+            document.getElementById('step2Content').innerHTML = content;
+        }
+
+        function generateStep2Content(serviceName) {
+            switch(serviceName) {
+                case 'Window Cleaning':
+                    return `
+                        <div class="calc-input-group">
+                            <label for="windowCount">How many windows do you have?</label>
+                            <input type="number" id="windowCount" placeholder="Enter number of windows" min="1" max="100">
+                        </div>
+                        <button class="calc-submit-btn" onclick="calculateWindowPrice()">Calculate Price</button>
+                    `;
+                    
+                case 'Patio Pressure Washing':
+                    return `
+                        <div class="calc-input-group">
+                            <label for="patioSqft">What's the approximate square footage of your patio?</label>
+                            <input type="number" id="patioSqft" placeholder="Enter square feet" min="1" max="5000">
+                        </div>
+                        <button class="calc-submit-btn" onclick="calculatePatioPrice()">Calculate Price</button>
+                    `;
+                    
+                case 'Driveway Pressure Washing':
+                    return `
+                        <div class="calc-input-group">
+                            <label for="drivewaySqft">What's the approximate square footage of your driveway?</label>
+                            <input type="number" id="drivewaySqft" placeholder="Enter square feet" min="1" max="10000">
+                        </div>
+                        <button class="calc-submit-btn" onclick="calculateDrivewayPrice()">Calculate Price</button>
+                    `;
+                    
+                case 'Full House Pressure Washing':
+                    return `
+                        <div class="calc-input-group">
+                            <label for="houseSqft">What's the approximate square footage of your house exterior?</label>
+                            <input type="number" id="houseSqft" placeholder="Enter square feet" min="500" max="20000">
+                        </div>
+                        <button class="calc-submit-btn" onclick="calculateHousePrice()">Calculate Price</button>
+                    `;
+                    
+                case 'Custom Landscaping':
+                    return `
+                        <div style="text-align: center; padding: 2rem;">
+                            <h4>Custom Landscaping Projects</h4>
+                            <p>Custom landscaping projects require individual assessment for accurate pricing.</p>
+                            <p><strong>Please contact AMR Services directly for a personalized quote.</strong></p>
+                            <div style="margin-top: 1.5rem;">
+                                <p>Email: amrservicescontact@gmail.com</p>
+                                <p>Phone: (803) 899-4393</p>
+                            </div>
+                            <button class="calc-submit-btn" onclick="closeCalculator()" style="margin-top: 1rem;">
+                                Contact AMR Services
+                            </button>
+                        </div>
+                    `;
+                    
+                case 'Standard Lawn Service':
+                    return `
+                        <div class="calc-input-group">
+                            <label>What's the approximate size of your lawn?</label>
+                            <div class="size-buttons">
+                                <button class="size-btn" onclick="selectLawnSize('small', 40)">
+                                    <div>Small</div>
+                                    <div style="font-size: 0.8rem; margin-top: 0.5rem;">Up to 2,500 sq ft</div>
+                                </button>
+                                <button class="size-btn" onclick="selectLawnSize('medium', 60)">
+                                    <div>Medium</div>
+                                    <div style="font-size: 0.8rem; margin-top: 0.5rem;">2,500 - 7,500 sq ft</div>
+                                </button>
+                                <button class="size-btn" onclick="selectLawnSize('large', 80)">
+                                    <div>Large</div>
+                                    <div style="font-size: 0.8rem; margin-top: 0.5rem;">7,500 - 12,000 sq ft</div>
+                                </button>
+                                <button class="size-btn" onclick="selectLawnSize('xl', 100)">
+                                    <div>XL/Estate</div>
+                                    <div style="font-size: 0.8rem; margin-top: 0.5rem;">12,000+ sq ft</div>
+                                </button>
+                            </div>
+                        </div>
+                    `;
+case 'Mulching':
+    return `
+        <div class="calc-input-group">
+            <label>What's the square footage of the area to be mulched?</label>
+            <input type="number" id="mulchSqft" placeholder="Enter square feet" min="1" max="10000" 
+                   style="width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ccc; border-radius: 5px;">
+            <div style="font-size: 0.9rem; color: #666; margin-top: 5px;">
+                $0.40 per square foot
+            </div>
+        </div>
+        <button class="calc-submit-btn" onclick="calculateMulchPrice()">Calculate Price</button>
+    `;
+
+case 'Hedge Trimming':
+    return `
+        <div class="calc-input-group">
+            <label>How many bushes/shrubs need trimming?</label>
+            <input type="number" id="hedgeCount" placeholder="Number of bushes" min="1" max="100" 
+                   style="width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ccc; border-radius: 5px;">
+            <div style="font-size: 0.9rem; color: #666; margin-top: 5px;">
+                $20 per bush/shrub
+            </div>
+        </div>
+        <button class="calc-submit-btn" onclick="calculateHedgePrice()">Calculate Price</button>
+    `;
+case 'Specialty Lawn Care':
+    return `
+        <div class="calc-input-group">
+            <label>Specialty lawn care treatment</label>
+            <div class="calc-result">
+                <div class="specialty-price">$150</div>
+                <div style="margin-top: 10px; color: #666;">
+                    Includes fertilization, weed control, or specialized treatments
+                </div>
+            </div>
+            <button class="calc-book-btn" onclick="proceedToBooking('Specialty Lawn Care', 150)" 
+                    style="width: 100%; margin-top: 20px; padding: 15px; background: black; color: white; border: none; border-radius: 8px; font-size: 1.1rem; cursor: pointer;">
+                Book This Service
+            </button>
+        </div>
+    `;
+
+case 'Deck & Fence Pressure Washing':
+    return `
+        <div class="calc-input-group">
+            <label>What do you need cleaned?</label>
+            <div class="deck-fence-options" style="display: grid; gap: 10px; margin: 15px 0;">
+                <div style="background: #f8f9fa; padding: 15px; border-radius: 8px;">
+                    <h4 style="margin: 0 0 10px 0; color: #035F0A;">Deck Options:</h4>
+                    <button class="deck-option-btn" onclick="selectDeckFenceOption('small_deck', 100)" 
+                            style="width: 100%; margin: 5px 0; padding: 10px; border: 1px solid #ddd; border-radius: 5px; background: white; cursor: pointer;">
+                        Small Deck - $100
+                    </button>
+                    <button class="deck-option-btn" onclick="selectDeckFenceOption('large_deck', 150)" 
+                            style="width: 100%; margin: 5px 0; padding: 10px; border: 1px solid #ddd; border-radius: 5px; background: white; cursor: pointer;">
+                        Large Deck - $150
+                    </button>
+                </div>
+                <div style="background: #f8f9fa; padding: 15px; border-radius: 8px;">
+                    <h4 style="margin: 0 0 10px 0; color: #035F0A;">Fence Options:</h4>
+                    <button class="deck-option-btn" onclick="selectDeckFenceOption('small_fence', 100)" 
+                            style="width: 100%; margin: 5px 0; padding: 10px; border: 1px solid #ddd; border-radius: 5px; background: white; cursor: pointer;">
+                        Small Fence - $100
+                    </button>
+                    <button class="deck-option-btn" onclick="selectDeckFenceOption('medium_fence', 150)" 
+                            style="width: 100%; margin: 5px 0; padding: 10px; border: 1px solid #ddd; border-radius: 5px; background: white; cursor: pointer;">
+                        Medium Fence - $150
+                    </button>
+                    <button class="deck-option-btn" onclick="selectDeckFenceOption('large_fence', 250)" 
+                            style="width: 100%; margin: 5px 0; padding: 10px; border: 1px solid #ddd; border-radius: 5px; background: white; cursor: pointer;">
+                        Large Fence - $250
+                    </button>
+                </div>
+            </div>
+        </div>
+    `;               
+                default:
+                    return '<p>Service not found.</p>';
+            }
+        }
+
+        // Calculation Functions
+        function calculateWindowPrice() {
+            const windowCount = parseInt(document.getElementById('windowCount').value);
+            if (!windowCount || windowCount < 1) {
+                alert('Please enter a valid number of windows.');
+                return;
+            }
+            
+            const pricePerWindow = 5;
+            const totalPrice = windowCount * pricePerWindow;
+            
+            showPriceResult(totalPrice, `$${windowCount} windows × ${pricePerWindow} per window`);
+        }
+
+        function calculatePatioPrice() {
+            const sqft = parseInt(document.getElementById('patioSqft').value);
+            if (!sqft || sqft < 1) {
+                alert('Please enter a valid square footage.');
+                return;
+            }
+            
+            const pricePerSqft = 0.40;
+            const minimumPrice = 50;
+            const calculatedPrice = sqft * pricePerSqft;
+            const totalPrice = Math.max(calculatedPrice, minimumPrice);
+            
+            let breakdown = `${sqft} sq ft × $${pricePerSqft} per sq ft = ${calculatedPrice.toFixed(2)}`;
+            if (totalPrice === minimumPrice) {
+                breakdown += `\nMinimum charge applied: $${minimumPrice}`;
+            }
+            
+            showPriceResult(totalPrice, breakdown);
+        }
+
+        function calculateDrivewayPrice() {
+            const sqft = parseInt(document.getElementById('drivewaySqft').value);
+            if (!sqft || sqft < 1) {
+                alert('Please enter a valid square footage.');
+                return;
+            }
+            
+            const pricePerSqft = 0.40;
+            const minimumPrice = 99;
+            const calculatedPrice = sqft * pricePerSqft;
+            const totalPrice = Math.max(calculatedPrice, minimumPrice);
+            
+            let breakdown = `${sqft} sq ft × $${pricePerSqft} per sq ft = ${calculatedPrice.toFixed(2)}`;
+            if (totalPrice === minimumPrice) {
+                breakdown += `\nMinimum charge applied: $${minimumPrice}`;
+            }
+            
+            showPriceResult(totalPrice, breakdown);
+        }
+
+        function calculateHousePrice() {
+            const sqft = parseInt(document.getElementById('houseSqft').value);
+            if (!sqft || sqft < 1) {
+                alert('Please enter a valid square footage.');
+                return;
+            }
+            
+            const pricePerSqft = 0.30;
+            const minimumPrice = 150;
+            const calculatedPrice = sqft * pricePerSqft;
+            const totalPrice = Math.max(calculatedPrice, minimumPrice);
+            
+            let breakdown = `${sqft} sq ft × $${pricePerSqft} per sq ft = ${calculatedPrice.toFixed(2)}`;
+            if (totalPrice === minimumPrice) {
+                breakdown += `\nMinimum charge applied: $${minimumPrice}`;
+            }
+            
+            showPriceResult(totalPrice, breakdown);
+        }
+
+        function selectLawnSize(size, price) {
+            // Remove previous selection
+            document.querySelectorAll('.size-btn').forEach(btn => btn.classList.remove('selected'));
+            
+            // Add selection to clicked button
+            event.target.closest('.size-btn').classList.add('selected');
+            
+            // Calculate immediately
+            setTimeout(() => {
+                const breakdown = `${size.charAt(0).toUpperCase() + size.slice(1)} lawn service`;
+                showPriceResult(price, breakdown);
+            }, 300);
+        }
+
+        function showPriceResult(price, breakdown) {
+            // Hide step 2, show step 3
+            document.getElementById('step2').style.display = 'none';
+            document.getElementById('step3').style.display = 'block';
+            
+            // Update price display
+            document.getElementById('finalPrice').textContent = `$${price}`;
+            document.getElementById('priceBreakdown').innerHTML = `
+                <h5>Service: ${selectedService}</h5>
+                <p>${breakdown.replace(/\n/g, '<br>')}</p>
+            `;
+        }
+
+        function goBackToStep1() {
+            document.getElementById('step2').style.display = 'none';
+            document.getElementById('step1').style.display = 'block';
+        }
+
+        function goBackToStep2() {
+            document.getElementById('step3').style.display = 'none';
+            document.getElementById('step2').style.display = 'block';
+        }
+
+        function startOver() {
+            // Reset all steps
+            document.getElementById('step3').style.display = 'none';
+            document.getElementById('step2').style.display = 'none';
+            document.getElementById('step1').style.display = 'block';
+            
+            // Clear selections
+            selectedService = null;
+            selectedCategory = null;
+        }
+
+        function redirectToBooking() {
+            // Close modal and redirect to booking for the selected service
+            bootstrap.Modal.getInstance(document.getElementById('pricingModal')).hide();
+            
+            // Redirect to appropriate service category
+            if (selectedCategory === 'landscaping') {
+                window.location.href = '/services/landscaping';
+            } else {
+                window.location.href = '/services/pressure_washing';
+            }
+        }
+
+        function closeCalculator() {
+            bootstrap.Modal.getInstance(document.getElementById('pricingModal')).hide();
+        }
+
+        // Reset calculator when modal is closed
+        document.getElementById('pricingModal').addEventListener('hidden.bs.modal', function () {
+            startOver();
+        });
+
+        // Set auth button colors based on page type
+        function setAuthButtonColors() {
+            const authButtons = document.querySelector('.auth-buttons');
+            
+            // Remove existing auth classes
+            authButtons.classList.remove('auth-landscaping', 'auth-pressure');
+            
+            // Detect page type and add appropriate class
+            if (window.location.pathname.includes('landscaping') || 
+                document.querySelector('.landscaping-title') ||
+                document.querySelector('.back-button')) {
+                authButtons.classList.add('auth-landscaping');
+            } else if (window.location.pathname.includes('pressure_washing') || 
+                       document.querySelector('.pressure-washing-title') ||
+                       document.querySelector('.back-button-blue')) {
+                authButtons.classList.add('auth-pressure');
+            }
+            // Home page and other pages use default white colors
+        }
+        // AUTHENTICATION FUNCTIONS
+        
+        // Load current user from backend
+        function loadCurrentUser() {
+            fetch('/api/current-user')
+            .then(response => response.json())
+            .then(data => {
+                if (data.authenticated) {
+                    currentUser = data.user;
+                    isAdmin = data.isAdmin;
+                } else {
+                    currentUser = null;
+                    isAdmin = false;
+                }
+                updateAuthDisplay();
+                fillBookingForm(); // Auto-fill if on booking page
+                showAdminFeatures(); // Show admin features if admin
+            })
+            .catch(error => {
+                console.log('Error loading user:', error);
+                currentUser = null;
+                isAdmin = false;
+                updateAuthDisplay();
+            });
+        }
+
+        // Login form submission
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+            
+            fetch('/api/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    email: email,
+                    password: password
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    currentUser = data.user;
+                    isAdmin = data.isAdmin;
+                    updateAuthDisplay();
+                    bootstrap.Modal.getInstance(document.getElementById('loginModal')).hide();
+                    showAlert(data.message, 'success');
+                    fillBookingForm(); // Auto-fill if on booking page
+                    showAdminFeatures(); // Show admin features if admin
+                } else {
+                    showAlert(data.message, 'error');
+                }
+            })
+            .catch(error => {
+                showAlert('Error logging in: ' + error.message, 'error');
+            });
+        });
+
+        // Signup form submission
+        document.getElementById('signupForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const userData = {
+                firstName: document.getElementById('signupFirstName').value,
+                lastName: document.getElementById('signupLastName').value,
+                email: document.getElementById('signupEmail').value,
+                phone: document.getElementById('signupPhone').value,
+                address: document.getElementById('signupAddress').value,
+                password: document.getElementById('signupPassword').value
+            };
+            
+            fetch('/api/signup', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(userData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    currentUser = data.user;
+                    isAdmin = data.isAdmin;
+                    updateAuthDisplay();
+                    bootstrap.Modal.getInstance(document.getElementById('signupModal')).hide();
+                    showAlert(data.message, 'success');
+                    fillBookingForm(); // Auto-fill if on booking page
+                    showAdminFeatures(); // Show admin features if admin
+                } else {
+                    showAlert(data.message, 'error');
+                }
+            })
+            .catch(error => {
+                showAlert('Error creating account: ' + error.message, 'error');
+            });
+        });
+
+        // Logout function
+        function logout() {
+            fetch('/api/logout', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                currentUser = null;
+                isAdmin = false;
+                updateAuthDisplay();
+                showAlert(data.message, 'success');
+                clearBookingForm(); // Clear form if on booking page
+                closeAdminPanel(); // Close admin panel if open
+            })
+            .catch(error => {
+                showAlert('Error logging out: ' + error.message, 'error');
+            });
+        }
+
+        <!-- In the updateAuthDisplay() function, around line 1100, replace the existing function with this: -->
+
+        function updateAuthDisplay() {
+    const pricingSection = document.querySelector('.pricing-calc-section');
+    const authButtons = document.querySelector('.auth-buttons');
+    
+    const isHomePage = document.body.classList.contains('home-page') || 
+                      document.querySelector('.home-page') !== null ||
+                      window.location.pathname === '/' ||
+                      window.location.pathname === '/index';
+    
+    // Update pricing calculator section (left side)
+    if (pricingSection) {
+        const pricingButton = isHomePage ? 
+            '<button class="pricing-calc-btn" data-bs-toggle="modal" data-bs-target="#pricingModal" style="display: inline-block;">Price Calculator</button>' : '';
+        pricingSection.innerHTML = pricingButton;
+    }
+    
+    // Update auth buttons (right side)
+    if (authButtons) {
+        if (currentUser) {
+            const adminButton = isAdmin ? 
+                '<button class="admin-btn" onclick="toggleAdminPanel()">ADMIN</button>' : '';
+            
+            const customerName = isAdmin ? 'Admin' : currentUser.firstName;
+            const welcomeClick = isAdmin ? 'toggleAdminPanel()' : 'toggleCustomerPanel()';
+            
+            authButtons.innerHTML = `
+                <div class="user-info d-flex align-items-center">
+                    <span class="customer-welcome" onclick="${welcomeClick}">Welcome, ${customerName}!</span>
+                    ${adminButton}
+                    <button class="logout-btn" onclick="logout()">Logout</button>
+                </div>
+            `;
+        } else {
+            authButtons.innerHTML = `
+                <button class="login-btn" data-bs-toggle="modal" data-bs-target="#loginModal">LOGIN</button>
+                <button class="signup-btn" data-bs-toggle="modal" data-bs-target="#signupModal">SIGNUP</button>
+            `;
+        }
+    }
+    
+    // Reapply color classes after updating HTML
+    setAuthButtonColors();
+}
+
+        function showAlert(message, type) {
+            // Create alert element
+            const alertDiv = document.createElement('div');
+            alertDiv.className = `alert alert-${type === 'success' ? 'success' : 'danger'} alert-dismissible fade show position-fixed`;
+            alertDiv.style.top = '20px';
+            alertDiv.style.right = '20px';
+            alertDiv.style.zIndex = '9999';
+            alertDiv.innerHTML = `
+                ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            `;
+            
+            document.body.appendChild(alertDiv);
+            
+            // Auto remove after 4 seconds
+            setTimeout(() => {
+                if (alertDiv.parentNode) {
+                    alertDiv.parentNode.removeChild(alertDiv);
+                }
+            }, 4000);
+        }
+
+        // Auto-fill booking form if user is logged in
+        function fillBookingForm() {
+            if (currentUser) {
+                const firstNameField = document.getElementById('first_name');
+                const lastNameField = document.getElementById('last_name');
+                const emailField = document.getElementById('email');
+                const phoneField = document.getElementById('phone');
+                const addressField = document.getElementById('address');
+                
+                if (firstNameField) firstNameField.value = currentUser.firstName;
+                if (lastNameField) lastNameField.value = currentUser.lastName;
+                if (emailField) emailField.value = currentUser.email;
+                if (phoneField) phoneField.value = currentUser.phone;
+                if (addressField) addressField.value = currentUser.address;
+            }
+        }
+
+        // Clear booking form when logged out
+        function clearBookingForm() {
+            const fields = ['first_name', 'last_name', 'email', 'phone', 'address'];
+            fields.forEach(fieldId => {
+                const field = document.getElementById(fieldId);
+                if (field) field.value = '';
+            });
+        }
+
+        // Reset modal forms when they're closed
+        document.getElementById('loginModal').addEventListener('hidden.bs.modal', function () {
+            document.getElementById('loginForm').reset();
+        });
+
+        document.getElementById('signupModal').addEventListener('hidden.bs.modal', function () {
+            document.getElementById('signupForm').reset();
+        });
+
+        // ADMIN PANEL FUNCTIONALITY
+        let adminData = null;
+
+        function showAdminFeatures() {
+            // This function is called when user logs in to show/hide admin features
+            if (isAdmin) {
+                loadAdminData();
+            }
+        }
+
+        function toggleAdminPanel() {
+            const panel = document.getElementById('adminPanel');
+            const overlay = document.getElementById('adminOverlay');
+            
+            if (panel.classList.contains('open')) {
+                closeAdminPanel();
+            } else {
+                panel.classList.add('open');
+                overlay.classList.add('show');
+                loadAdminData();
+            }
+        }
+
+        function closeAdminPanel() {
+            document.getElementById('adminPanel').classList.remove('open');
+            document.getElementById('adminOverlay').classList.remove('show');
+        }
+
+        function loadAdminData() {
+            if (!isAdmin) return;
+
+            fetch('/api/admin/dashboard')
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    adminData = data.data;
+                    displayAdminStats();
+                    showAdminTab('today'); // Show today's bookings by default
+                } else {
+                    showAlert('Error loading admin data: ' + data.message, 'error');
+                }
+            })
+            .catch(error => {
+                showAlert('Error loading admin data: ' + error.message, 'error');
+            });
+        }
+
+        function displayAdminStats() {
+            const statsContainer = document.getElementById('adminStats');
+            const stats = adminData.stats;
+            
+            statsContainer.innerHTML = `
+                <div class="stat-card">
+                    <div class="stat-number">${stats.todays_bookings}</div>
+                    <div class="stat-label">Today's Bookings</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">${stats.pending_bookings}</div>
+                    <div class="stat-label">Pending</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">${stats.total_bookings}</div>
+                    <div class="stat-label">Total Bookings</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">${stats.total_customers}</div>
+                    <div class="stat-label">Customers</div>
+                </div>
+            `;
+        }
+
+        function showAdminTab(tab) {
+            // Update active tab
+            document.querySelectorAll('.admin-tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelector(`[onclick="showAdminTab('${tab}')"]`).classList.add('active');
+            
+            const contentContainer = document.getElementById('adminContent');
+            
+            switch(tab) {
+                case 'today':
+                    displayBookings(adminData.today_bookings, 'Today\'s Bookings');
+                    break;
+                case 'pending':
+                    displayBookings(adminData.pending_bookings, 'Pending Bookings');
+                    break;
+                case 'recent':
+                    displayBookings(adminData.recent_bookings, 'Recent Bookings');
+                    break;
+                case 'customers':
+                    loadCustomers();
+                    break;
+            }
+        }
+
+        function displayBookings(bookings, title) {
+            const contentContainer = document.getElementById('adminContent');
+            
+            if (bookings.length === 0) {
+                contentContainer.innerHTML = `
+                    <h4 style="color: white; text-align: center; margin: 2rem 0;">
+                        No ${title.toLowerCase()} found
+                    </h4>
+                `;
+                return;
+            }
+            
+            let html = `<h4 style="color: white; margin-bottom: 1rem;">${title}</h4>`;
+            
+            bookings.forEach(booking => {
+                const serviceColor = booking.service_category === 'landscaping' ? '#035F0A' : '#7EE0FF';
+                
+                html += `
+                    <div class="booking-item">
+                        <div class="booking-header">
+                            <span class="customer-name">${booking.customer_name}</span>
+                            <span class="booking-status status-${booking.status}">${booking.status}</span>
+                        </div>
+                        <div class="booking-details">
+                            <div><strong style="color: ${serviceColor};">${booking.service_name}</strong></div>
+                            <div>📅 ${booking.booking_date} at ${booking.start_time}</div>
+                            <div>📧 ${booking.customer_email}</div>
+                            <div>📞 ${booking.customer_phone}</div>
+                            <div>📍 ${booking.address}</div>
+                            ${booking.custom_description ? `<div style="margin-top: 0.5rem; padding: 0.5rem; background: rgba(206, 137, 70, 0.1); border-left: 3px solid #CE8946; border-radius: 4px;"><strong style="color: #CE8946;">Custom Request:</strong><br>${booking.custom_description}</div>` : ''}
+                        </div>
+                        <div class="admin-actions">
+                            ${booking.status === 'pending' ? `<button class="admin-action-btn btn-confirm" onclick="updateBookingStatus(${booking.id}, 'confirmed')">Confirm</button>` : ''}
+                            ${booking.status === 'confirmed' ? `<button class="admin-action-btn btn-complete" onclick="updateBookingStatus(${booking.id}, 'completed')">Complete</button>` : ''}
+                            ${booking.status !== 'cancelled' ? `<button class="admin-action-btn btn-cancel" onclick="updateBookingStatus(${booking.id}, 'cancelled')">Cancel</button>` : ''}
+                        </div>
+                    </div>
+                `;
+            });
+            
+            contentContainer.innerHTML = html;
+        }
+
+        function updateBookingStatus(bookingId, newStatus) {
+            fetch(`/api/admin/bookings/${bookingId}/status`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    status: newStatus
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showAlert(data.message, 'success');
+                    loadAdminData(); // Refresh admin data
+                } else {
+                    showAlert('Error updating booking: ' + data.message, 'error');
+                }
+            })
+            .catch(error => {
+                showAlert('Error updating booking: ' + error.message, 'error');
+            });
+        }
+
+        function loadCustomers() {
+            fetch('/api/admin/customers')
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    displayCustomers(data.customers);
+                } else {
+                    showAlert('Error loading customers: ' + data.message, 'error');
+                }
+            })
+            .catch(error => {
+                showAlert('Error loading customers: ' + error.message, 'error');
+            });
+        }
+
+        function displayCustomers(customers) {
+            const contentContainer = document.getElementById('adminContent');
+            
+            if (customers.length === 0) {
+                contentContainer.innerHTML = `
+                    <h4 style="color: white; text-align: center; margin: 2rem 0;">
+                        No customers found
+                    </h4>
+                `;
+                return;
+            }
+            
+            let html = '<h4 style="color: white; margin-bottom: 1rem;">Customer Management</h4>';
+            
+            customers.forEach(customer => {
+                html += `
+                    <div class="booking-item">
+                        <div class="booking-header">
+                            <span class="customer-name">${customer.name}</span>
+                            <span class="booking-status" style="background-color: #17a2b8;">${customer.total_bookings} bookings</span>
+                        </div>
+                        <div class="booking-details">
+                            <div>📧 ${customer.email}</div>
+                            <div>📞 ${customer.phone}</div>
+                            <div>📍 ${customer.address}</div>
+                            <div>📅 Joined: ${customer.created_at}</div>
+                            <div>✅ Completed: ${customer.completed_bookings} bookings</div>
+                            ${customer.last_booking ? `<div>🗓️ Last booking: ${customer.last_booking}</div>` : '<div>🗓️ No bookings yet</div>'}
+                        </div>
+                    </div>
+                `;
+            });
+            
+            contentContainer.innerHTML = html;
+        }
+
+        // CUSTOMER PANEL FUNCTIONALITY
+        let customerData = null;
+
+        function toggleCustomerPanel() {
+            const panel = document.getElementById('customerPanel');
+            const overlay = document.getElementById('customerOverlay');
+            
+            if (panel.classList.contains('open')) {
+                closeCustomerPanel();
+            } else {
+                panel.classList.add('open');
+                overlay.classList.add('show');
+                loadCustomerData();
+            }
+        }
+
+        function closeCustomerPanel() {
+            document.getElementById('customerPanel').classList.remove('open');
+            document.getElementById('customerOverlay').classList.remove('show');
+        }
+
+        function loadCustomerData() {
+            fetch('/api/customer/bookings')
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    customerData = data.data;
+                    displayCustomerStats();
+                    displayCustomerBookings();
+                } else {
+                    showAlert('Error loading your bookings: ' + data.message, 'error');
+                }
+            })
+            .catch(error => {
+                showAlert('Error loading your bookings: ' + error.message, 'error');
+            });
+        }
+
+        function displayCustomerStats() {
+            const statsContainer = document.getElementById('customerStats');
+            const stats = customerData.stats;
+            
+            statsContainer.innerHTML = `
+                <div class="customer-stat-card">
+                    <div class="customer-stat-number">${stats.total_bookings}</div>
+                    <div class="customer-stat-label">Total Bookings</div>
+                </div>
+                <div class="customer-stat-card">
+                    <div class="customer-stat-number">${stats.completed_bookings}</div>
+                    <div class="customer-stat-label">Completed</div>
+                </div>
+                <div class="customer-stat-card">
+                    <div class="customer-stat-number">${stats.pending_bookings}</div>
+                    <div class="customer-stat-label">Pending</div>
+                </div>
+                <div class="customer-stat-card">
+                    <div class="customer-stat-number">${stats.cancelled_bookings}</div>
+                    <div class="customer-stat-label">Cancelled</div>
+                </div>
+            `;
+        }
+
+        function displayCustomerBookings() {
+            const contentContainer = document.getElementById('customerContent');
+            const bookings = customerData.bookings;
+            
+            if (bookings.length === 0) {
+                contentContainer.innerHTML = `
+                    <h4 style="color: white; text-align: center; margin: 2rem 0;">
+                        No bookings found. <a href="/" style="color: white; text-decoration: underline;">Book your first service!</a>
+                    </h4>
+                `;
+                return;
+            }
+            
+            let html = '<h4 style="color: white; margin-bottom: 1rem;">Your Booking History</h4>';
+            
+            bookings.forEach(booking => {
+                const serviceClass = booking.service_category === 'landscaping' ? 'landscaping' : 'pressure';
+                const serviceColor = booking.service_category === 'landscaping' ? '#035F0A' : '#7EE0FF';
+                
+                // Format date nicely
+                const bookingDate = new Date(booking.booking_date);
+                const formattedDate = bookingDate.toLocaleDateString('en-US', { 
+                    weekday: 'long', 
+                    year: 'numeric', 
+                    month: 'long', 
+                    day: 'numeric' 
+                });
+                
+                html += `
+                    <div class="customer-booking-item customer-booking-${serviceClass}">
+                        <div class="customer-booking-header">
+                            <span class="customer-service-name customer-service-${serviceClass}">${booking.service_name}</span>
+                            <span class="booking-status status-${booking.status}">${booking.status}</span>
+                        </div>
+                        <div class="customer-booking-details">
+                            <div>📅 ${formattedDate}</div>
+                            <div>🕐 ${booking.start_time} - ${booking.end_time}</div>
+                            <div>📝 Booked on ${new Date(booking.created_at).toLocaleDateString()}</div>
+                            ${booking.custom_description ? `<div style="margin-top: 0.5rem; padding: 0.5rem; background: rgba(255, 255, 255, 0.1); border-left: 3px solid white; border-radius: 4px;"><strong style="color: white;">Your Request:</strong><br>${booking.custom_description}</div>` : ''}
+                        </div>
+                    </div>
+                `;
+            });
+            
+            contentContainer.innerHTML = html;
+        }
+
+        // ADMIN LOGO CLICK FUNCTION
+        function handleLogoClick() {
+            // Only open admin panel if user is already logged in as admin
+            if (isAdmin) {
+                toggleAdminPanel();
+            }
+            // Do nothing for regular users - they don't know admin mode exists
+        }
+        // Variables for recurring booking
+        let selectedServiceData = {
+            id: null,
+            name: '',
+            category: '',
+            isCustom: false,
+            bookingType: 'onetime',
+            frequency: null,
+            uploadedPhotos: []
+        };
+
+        // Service selection with recurring options
+        // Service selection with recurring options
+    function selectServiceWithOptions(serviceId, serviceName, category, isCustom) {
+        selectedServiceData.id = serviceId;
+        selectedServiceData.name = serviceName;
+        selectedServiceData.category = category;
+        selectedServiceData.isCustom = isCustom;
+        
+        // Update modal title
+        document.getElementById('selectedServiceName').textContent = serviceName;
+        
+        // Apply service-specific styling
+        const modal = document.getElementById('recurringModal');
+        const modalContent = modal.querySelector('.modal-content');
+        
+        // Remove existing service classes
+        modalContent.classList.remove('landscaping', 'pressure');
+        
+        // Add appropriate service class
+        if (category === 'landscaping') {
+            modalContent.classList.add('landscaping');
+        } else {
+            modalContent.classList.add('pressure');
+        }
+        
+        // Show the recurring booking modal
+        const bootstrapModal = new bootstrap.Modal(modal);
+        bootstrapModal.show();
+    }
+
+        // Select booking type (one-time or recurring)
+        function selectBookingType(type) {
+            selectedServiceData.bookingType = type;
+            
+            // Update card selection
+            document.querySelectorAll('.booking-option-card').forEach(card => {
+                card.classList.remove('selected');
+            });
+            event.target.closest('.booking-option-card').classList.add('selected');
+            
+            if (type === 'recurring') {
+                document.getElementById('recurringOptions').style.display = 'block';
+                
+                // Show appropriate recurring options based on service category
+                if (selectedServiceData.category === 'landscaping') {
+                    document.getElementById('landscapingRecurring').style.display = 'block';
+                    document.getElementById('pressureRecurring').style.display = 'none';
+                } else {
+                    document.getElementById('landscapingRecurring').style.display = 'none';
+                    document.getElementById('pressureRecurring').style.display = 'block';
+                }
+            } else {
+                document.getElementById('recurringOptions').style.display = 'none';
+                // Proceed directly for one-time bookings
+                proceedToNextStep();
+            }
+        }
+
+        // Set frequency presets for landscaping
+        function setFrequency(value, type) {
+            document.getElementById('customDays').value = value;
+            document.getElementById('frequencyType').value = type;
+            
+            // Update preset button selection
+            document.querySelectorAll('.preset-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+        }
+        // Set frequency presets for pressure washing
+        function setPressureFrequency(value) {
+            // Store the selected frequency
+            selectedServiceData.pressureFrequency = value;
+            
+            // Update preset button selection
+            document.querySelectorAll('#pressureRecurring .preset-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+        }
+        // Proceed with recurring booking
+        function proceedWithRecurring() {
+            if (selectedServiceData.category === 'landscaping') {
+                const days = document.getElementById('customDays').value;
+                const type = document.getElementById('frequencyType').value;
+                selectedServiceData.frequency = { value: days, type: type };
+            } else {
+                // Check if pressure washing frequency was selected
+                if (!selectedServiceData.pressureFrequency) {
+                    alert('Please select a frequency for your recurring service.');
+                    return;
+                }
+                selectedServiceData.frequency = { value: selectedServiceData.pressureFrequency };
+            }
+            
+            proceedToNextStep();
+        }
+
+        // Proceed to next step (photo upload for custom landscaping, or calendar)
+        function proceedToNextStep() {
+            // Close recurring modal
+            bootstrap.Modal.getInstance(document.getElementById('recurringModal')).hide();
+            
+            // If custom landscaping, show photo upload modal
+            if (selectedServiceData.isCustom && selectedServiceData.name === 'Custom Landscaping') {
+                setTimeout(() => {
+                    const photoModal = new bootstrap.Modal(document.getElementById('photoUploadModal'));
+                    photoModal.show();
+                }, 500);
+            } else {
+                // Proceed directly to calendar
+                proceedToCalendar();
+            }
+        }
+
+        // Proceed to calendar with all selected options
+        function proceedToCalendar() {
+            // Store service data in session storage for the calendar page
+            sessionStorage.setItem('selectedServiceData', JSON.stringify(selectedServiceData));
+            
+            // Redirect to calendar
+            window.location.href = `/calendar/${selectedServiceData.id}`;
+        }
+
+        // Skip photos and continue
+        function skipPhotos() {
+            bootstrap.Modal.getInstance(document.getElementById('photoUploadModal')).hide();
+            proceedToCalendar();
+        }
+
+        // Continue with photos
+        function continueWithPhotos() {
+            bootstrap.Modal.getInstance(document.getElementById('photoUploadModal')).hide();
+            proceedToCalendar();
+        }
+        // Service link click handler
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add existing DOMContentLoaded code here
+            loadCurrentUser();
+            setAuthButtonColors();
+            
+            // Add body class for home page detection
+            if (window.location.pathname === '/' || window.location.pathname === '/index') {
+                document.body.classList.add('home-page');
+            }
+            
+            
+            // Ensure pricing button visibility
+            setTimeout(ensurePricingButtonVisibility, 100);
+            
+            // Service link handlers
+            document.addEventListener('click', function(e) {
+                if (e.target.closest('.service-link')) {
+                    e.preventDefault();
+                    const link = e.target.closest('.service-link');
+                    const serviceId = parseInt(link.dataset.serviceId);
+                    const serviceName = link.dataset.serviceName;
+                    const serviceCategory = link.dataset.serviceCategory;
+                    const isCustom = link.dataset.isCustom === 'True';
+                    
+                    selectServiceWithOptions(serviceId, serviceName, serviceCategory, isCustom);
+                }
+            });
+        });
+
+        // Photo Upload Functionality
+        function handleFiles(files) {
+            Array.from(files).forEach(file => {
+                if (file.type.startsWith('image/')) {
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        addPhotoPreview(e.target.result, file);
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+        }
+
+        // Add photo preview
+        function addPhotoPreview(src, file) {
+            const photoPreview = document.getElementById('photoPreview');
+            const photoItem = document.createElement('div');
+            photoItem.className = 'photo-item';
+            
+            photoItem.innerHTML = `
+                <img src="${src}" alt="Uploaded photo">
+                <button class="photo-remove" onclick="removePhoto(this, '${file.name}')">×</button>
+            `;
+            
+            photoPreview.appendChild(photoItem);
+            
+            // Store file reference
+            selectedServiceData.uploadedPhotos.push({
+                file: file,
+                preview: src,
+                name: file.name
+            });
+        }
+
+        // Remove photo
+        function removePhoto(button, fileName) {
+            button.closest('.photo-item').remove();
+            selectedServiceData.uploadedPhotos = selectedServiceData.uploadedPhotos.filter(
+                photo => photo.name !== fileName
+            );
+        }
+        // Google Maps Autocomplete Variables  
+        let signupAutocomplete;
+        let bookingAutocomplete;
+
+        // Initialize Google Maps when page loads
+        function initAutocomplete() {
+            console.log('🗺️ Google Maps API loaded');
+            setupAddressAutocomplete();
+        }
+
+        // Setup autocomplete for address fields
+        function setupAddressAutocomplete() {
+            // For signup form
+            const signupField = document.getElementById('signupAddress');
+            if (signupField) {
+                new google.maps.places.Autocomplete(signupField, {
+                    types: ['address'],
+                    componentRestrictions: { country: 'US' }
+                });
+            }
+            
+            // For booking form  
+            const bookingField = document.getElementById('address');
+            if (bookingField) {
+                new google.maps.places.Autocomplete(bookingField, {
+                    types: ['address'],
+                    componentRestrictions: { country: 'US' }
+                });
+            }
+        }
+        // Detect and apply service styling
+function detectAndApplyServiceStyling() {
+    // Check URL or page content for service type
+    const url = window.location.href;
+    const pageTitle = document.title;
+    const serviceCards = document.querySelectorAll('.service-option-card, .pressure-washing-card');
+    
+    // Remove existing classes
+    document.body.classList.remove('landscaping-service', 'pressure-washing-service');
+    
+    // Detect service type from context
+    if (url.includes('landscaping') || pageTitle.includes('Landscaping') || 
+        document.querySelector('.landscaping-title')) {
+        document.body.classList.add('landscaping-service');
+    } else if (url.includes('pressure') || pageTitle.includes('Pressure') || 
+               document.querySelector('.pressure-washing-title')) {
+        document.body.classList.add('pressure-washing-service');
+    }
+}
+// New service selection functions
+function selectMulchAmount(size, price) {
+    updatePriceDisplay(price, `${size.charAt(0).toUpperCase() + size.slice(1)} mulching job`);
+    updateActiveButton(event.target);
+}
+
+function selectHedgeLength(size, price) {
+    updatePriceDisplay(price, `${size.charAt(0).toUpperCase() + size.slice(1)} hedge trimming`);
+    updateActiveButton(event.target);
+}
+
+function selectLawnTreatment(treatment, price) {
+    const treatmentName = treatment.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase());
+    updatePriceDisplay(price, `${treatmentName} treatment`);
+    updateActiveButton(event.target);
+}
+
+function selectDeckSize(size, price) {
+    updatePriceDisplay(price, `${size.charAt(0).toUpperCase() + size.slice(1)} deck & fence washing`);
+    updateActiveButton(event.target);
+}
+// Mulching price calculation
+function calculateMulchPrice() {
+    const sqft = parseFloat(document.getElementById('mulchSqft').value) || 0;
+    
+    if (sqft <= 0) {
+        alert('Please enter a valid square footage.');
+        return;
+    }
+    
+    let price = sqft * 0.40;
+    
+    // Apply minimum charge (but don't show it to customer)
+    if (price < 50) {
+        price = 50;
+    }
+    
+    showPriceResult(price, `${sqft} sq ft mulching service`);
+}
+// Hedge trimming price calculation
+function calculateHedgePrice() {
+    const bushes = parseInt(document.getElementById('hedgeCount').value) || 0;
+    
+    if (bushes <= 0) {
+        alert('Please enter a valid number of bushes.');
+        return;
+    }
+    
+    const price = bushes * 20;
+    
+    showPriceResult(price, `${bushes} bush${bushes !== 1 ? 'es' : ''} trimming`);
+}
+
+// Deck and fence option selection
+function selectDeckFenceOption(option, price) {
+    const optionNames = {
+        'small_deck': 'Small Deck',
+        'large_deck': 'Large Deck', 
+        'small_fence': 'Small Fence',
+        'medium_fence': 'Medium Fence',
+        'large_fence': 'Large Fence'
+    };
+    
+    updatePriceDisplay(price, `${optionNames[option]} pressure washing`);
+    
+    // Update button styling
+    document.querySelectorAll('.deck-option-btn').forEach(btn => {
+        btn.style.background = 'white';
+        btn.style.borderColor = '#ddd';
+    });
+    event.target.style.background = '#035F0A';
+    event.target.style.color = 'white';
+    event.target.style.borderColor = '#035F0A';
+}
+
+// Clear price display helper
+function clearPriceDisplay() {
+    const existingResult = document.querySelector('.calc-result');
+    const existingButton = document.querySelector('.calc-book-btn');
+    if (existingResult) existingResult.remove();
+    if (existingButton) existingButton.remove();
+}
+// Continue with your existing JavaScript functions...
+
+// Run on page load and when needed
+document.addEventListener('DOMContentLoaded', detectAndApplyServiceStyling);
+        
+        
+    </script>     
+<!-- Recurring Booking Modal -->
+<div class="modal fade" id="recurringModal" tabindex="-1" aria-labelledby="recurringModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content recurring-modal">
+            <div class="modal-header">
+                <h5 class="modal-title" id="recurringModalLabel">Booking Options</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <h4 id="selectedServiceName">Service Name</h4>
+                <p class="text-muted">Choose your booking preference:</p>
+                
+                <!-- One-time vs Recurring Options -->
+                <div class="booking-options">
+                    <div class="booking-option-card" onclick="selectBookingType('onetime')">
+                        <h6>One-time Service</h6>
+                        <p>Book this service once</p>
+                    </div>
+                    
+                    <div class="booking-option-card" onclick="selectBookingType('recurring')">
+                        <h6>Recurring Service</h6>
+                        <p>Set up regular maintenance</p>
+                    </div>
+                </div>
+                
+                <!-- Recurring Options (hidden by default) -->
+                <div id="recurringOptions" style="display: none;">
+                    <h6>How often would you like this service?</h6>
+                    
+                    <!-- Landscaping Recurring Options -->
+                    <div id="landscapingRecurring" style="display: none;">
+                        <div class="recurring-frequency">
+                            <label for="customDays">Every</label>
+                            <input type="number" id="customDays" min="1" max="30" value="7" style="width: 60px;">
+                            <select id="frequencyType">
+                                <option value="days">Days</option>
+                                <option value="weeks" selected>Weeks</option>
+                            </select>
+                        </div>
+                        <div class="frequency-presets">
+                            <button class="preset-btn" onclick="setFrequency(7, 'days')">Weekly</button>
+                            <button class="preset-btn" onclick="setFrequency(2, 'weeks')">Bi-weekly</button>
+                            <button class="preset-btn" onclick="setFrequency(1, 'month')">Monthly</button>
+                        </div>
+                    </div>
+                    
+                    <!-- Pressure Washing Recurring Options -->
+                    <div id="pressureRecurring" style="display: none;">
+                        <div class="frequency-presets">
+                            <button class="preset-btn" onclick="setPressureFrequency('6months')">Semi-Annual</button>
+                            <button class="preset-btn" onclick="setPressureFrequency('12months')">Annual</button>
+                        </div>
+                    </div>
+                    
+                    <button class="btn btn-primary" onclick="proceedWithRecurring()">Continue</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Photo Upload Modal (for Custom Landscaping) -->
+<div class="modal fade" id="photoUploadModal" tabindex="-1" aria-labelledby="photoUploadModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content photo-modal">
+            <div class="modal-header">
+                <h5 class="modal-title" id="photoUploadModalLabel">Upload Photos for Custom Landscaping</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Help us understand your project by uploading photos of the area you'd like landscaped:</p>
+                
+                <div class="photo-upload-area">
+                    <div class="upload-zone" id="uploadZone">
+                        <div class="upload-content">
+                            <i class="fas fa-cloud-upload-alt upload-icon"></i>
+                            <h6>Drag & drop photos here</h6>
+                            <p>or click to browse</p>
+                            <input type="file" id="photoInput" multiple accept="image/*" style="display: none;">
+                        </div>
+                    </div>
+                    
+                    <div class="photo-preview" id="photoPreview"></div>
+                </div>
+                
+                <div class="upload-tips">
+                    <h6>Tips for better quotes:</h6>
+                    <ul>
+                        <li>Take photos from multiple angles</li>
+                        <li>Include close-ups of specific areas</li>
+                        <li>Show the full scope of the project area</li>
+                        <li>Include any existing features to work around</li>
+                    </ul>
+                </div>
+                
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="skipPhotos()">Skip Photos</button>
+                    <button type="button" class="btn btn-primary" onclick="continueWithPhotos()">Continue</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

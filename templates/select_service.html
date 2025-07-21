@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+
+{% block title %}Select {{ category|title }} Service - AMR{% endblock %}
+
+{% block content %}
+<div class="text-center">
+    <!-- Back Button -->
+    <div class="text-start" style="padding-top: 20px; padding-left: 20px;">
+        {% if category == 'landscaping' %}
+            <a href="{{ url_for('index') }}" class="back-button">
+                ←
+            </a>
+        {% else %}
+            <a href="{{ url_for('index') }}" class="back-button-blue">
+                ←
+            </a>
+        {% endif %}
+    </div>
+    
+    <!-- AMR Logo -->
+    <div class="text-center mb-5" style="padding-top: 30px;">
+        {% if category == 'pressure_washing' %}
+        <img src="{{ url_for('static', filename='images/amr_logo2.png') }}" alt="AMR Pressure Washing Logo" style="max-width: 150px; height: auto; border-radius: 20px;">
+        {% else %}
+        <img src="{{ url_for('static', filename='images/amr_logo.png') }}" alt="AMR Logo" style="max-width: 150px; height: auto; border-radius: 20px;">
+        {% endif %}
+    </div>
+    
+    <!-- Page Title with Different Colors for Each Service -->
+    {% if category == 'landscaping' %}
+        <h1 class="mb-5 landscaping-title">
+            Landscaping Services
+        </h1>
+    {% else %}
+        <h1 class="mb-5 pressure-washing-title">
+            Pressure Washing Services
+        </h1>
+    {% endif %}
+    
+    <!-- Service Options -->
+    <div class="row justify-content-center">
+        {% for service in services %}
+        <div class="col-md-8 mb-4">
+            <a href="javascript:void(0)" 
+               class="text-decoration-none service-link" 
+               data-service-id="{{ service.id }}" 
+               data-service-name="{{ service.name }}" 
+               data-service-category="{{ service.category }}" 
+               data-is-custom="{{ service.is_custom }}">
+                {% if category == 'landscaping' %}
+                    <div class="service-option-card">
+                {% else %}
+                    <div class="pressure-washing-card">
+                {% endif %}
+                    {% if service.name == 'Normal Package' %}
+                        <h5 class="service-name">Standard Lawn Service</h5>
+                    {% elif service.name == 'Custom Landscaping' %}
+                        <h5 class="service-name">Custom Landscaping</h5>
+                    {% else %}
+                        <h5 class="service-name">{{ service.name }}</h5>
+                    {% endif %}
+                </div>
+            </a>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
