@@ -38,6 +38,9 @@ from email.mime.base import MIMEBase
 from email import encoders
 import os
 from werkzeug.utils import secure_filename
+from dotenv import load_dotenv
+
+load_dotenv()
 
 
 # Application Configuration
@@ -321,6 +324,9 @@ def api_current_user():
         })
     else:
         return jsonify({'authenticated': False, 'isAdmin': False})
+@app.context_processor
+def inject_google_maps_key():
+    return dict(google_maps_key=os.getenv('GOOGLE_MAPS_API_KEY'))
 
 # ========================================
 # UTILITY FUNCTIONS
