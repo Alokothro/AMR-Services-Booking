@@ -1,4 +1,6 @@
 Flask
 python-dotenv
 Flask-SQLAlchemy
+Flask-Login
 APScheduler
+email-validator
