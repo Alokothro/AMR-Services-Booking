@@ -1665,7 +1665,7 @@ def init_database():
 
 if __name__ == '__main__':
     # Initialize database (comment out after first run)
-    init_database()
+    # init_database()
     # Start the reminder system
     start_reminder_scheduler()
     # Run the application
