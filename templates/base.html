@@ -1592,8 +1592,7 @@ box-shadow: 0 4px 8px rgba(255, 255, 255, 0.2);
 .auth-buttons {
 margin-left: 200px !important;
 }
-/* MOBILE RESPONSIVE FIXES FOR AMR BOOKING APP */
-/* Updated version with proper navigation layout */
+/* FINAL MOBILE RESPONSIVE FIXES FOR AMR BOOKING APP */
 
 /* FIX 1: Calendar Column Alignment on Mobile ONLY */
 @media (max-width: 768px) {
@@ -1669,11 +1668,18 @@ margin-left: 200px !important;
         cursor: not-allowed !important;
     }
 
-    /* FIX 2: Mobile Navigation Layout */
+    /* FIX 2: FIXED Navigation Header - Stays at Top Always */
     .top-nav {
-        background: rgba(0, 0, 0, 0.9) !important;
+        position: fixed !important;
+        top: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        width: 100% !important;
+        z-index: 1000 !important;
+        background: rgba(0, 0, 0, 0.95) !important;
         backdrop-filter: blur(10px) !important;
-        padding: 0.8rem 1rem !important;
+        padding: 0.6rem 1rem !important;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
     }
 
     .nav-container {
@@ -1681,132 +1687,157 @@ margin-left: 200px !important;
         justify-content: space-between !important;
         align-items: center !important;
         width: 100% !important;
+        max-width: none !important;
         padding: 0 !important;
+        margin: 0 !important;
     }
     
-    /* Price Calculator - Smaller on Left */
+    /* FIX 3: Price Calculator - Far Left, Smaller, Fixed */
     .pricing-calc-section {
         display: flex !important;
         align-items: center !important;
+        justify-content: flex-start !important;
     }
     
     .pricing-calc-btn {
         display: inline-block !important;
-        background-color: transparent !important;
+        background: transparent !important;
         color: white !important;
-        border: 1px solid white !important;
-        padding: 0.3rem 0.6rem !important;
-        border-radius: 15px !important;
-        font-weight: 500 !important;
+        border: 2px solid white !important;
+        padding: 0.4rem 0.8rem !important;
+        border-radius: 20px !important;
+        font-weight: 600 !important;
         cursor: pointer !important;
         transition: all 0.3s ease !important;
-        font-size: 0.7rem !important;
+        font-size: 0.8rem !important;
         white-space: nowrap !important;
         position: static !important;
         left: auto !important;
         top: auto !important;
         width: auto !important;
         height: auto !important;
+        margin: 0 !important;
     }
     
     .pricing-calc-btn:hover {
         background-color: white !important;
         color: black !important;
+        transform: translateY(-2px) !important;
     }
     
-    /* Auth Buttons - Smaller on Right */
+    /* FIX 4: Auth Buttons - Right Side, All White, Fixed */
     .auth-buttons {
         display: flex !important;
-        gap: 0.4rem !important;
+        gap: 0.5rem !important;
         justify-content: flex-end !important;
         align-items: center !important;
         margin: 0 !important;
-        flex-wrap: wrap !important;
+        flex-wrap: nowrap !important;
     }
     
-    /* Login/Signup buttons - smaller */
+    /* Login/Signup buttons - matching size */
     .login-btn, .signup-btn {
-        padding: 0.3rem 0.8rem !important;
-        border: 1px solid white !important;
+        padding: 0.4rem 0.8rem !important;
+        border: 2px solid white !important;
         background: transparent !important;
-        font-weight: 500 !important;
-        border-radius: 15px !important;
+        font-weight: 600 !important;
+        border-radius: 20px !important;
         cursor: pointer !important;
         transition: all 0.3s ease !important;
         color: white !important;
-        font-size: 0.7rem !important;
-        min-width: 60px !important;
+        font-size: 0.8rem !important;
+        min-width: auto !important;
         text-align: center !important;
+        white-space: nowrap !important;
     }
     
     .login-btn:hover, .signup-btn:hover {
         background-color: white !important;
         color: black !important;
+        transform: translateY(-2px) !important;
     }
     
-    /* User info when logged in - smaller and right-aligned */
+    /* FIX 5: User info when logged in - All White, Right-aligned, Fixed */
     .user-info {
         display: flex !important;
         align-items: center !important;
         justify-content: flex-end !important;
-        gap: 0.3rem !important;
-        font-weight: 500 !important;
-        font-size: 0.7rem !important;
+        gap: 0.5rem !important;
+        font-weight: 600 !important;
         color: white !important;
-        flex-wrap: wrap !important;
+        flex-wrap: nowrap !important;
     }
     
+    /* Welcome button - WHITE not gray */
     .customer-welcome {
-        font-size: 0.65rem !important;
-        padding: 0.25rem 0.5rem !important;
-        border-radius: 12px !important;
+        font-size: 0.8rem !important;
+        padding: 0.4rem 0.8rem !important;
+        border-radius: 20px !important;
         cursor: pointer !important;
         transition: all 0.3s ease !important;
-        border: 1px solid rgba(255, 255, 255, 0.3) !important;
-        background: rgba(255, 255, 255, 0.1) !important;
+        border: 2px solid white !important;
+        background: transparent !important;
+        color: white !important;
+        white-space: nowrap !important;
     }
     
+    .customer-welcome:hover {
+        background: white !important;
+        color: black !important;
+        transform: translateY(-2px) !important;
+    }
+    
+    /* Admin button - matching style */
     .admin-btn {
-        font-size: 0.6rem !important;
-        padding: 0.25rem 0.5rem !important;
-        border-radius: 12px !important;
+        font-size: 0.8rem !important;
+        padding: 0.4rem 0.8rem !important;
+        border-radius: 20px !important;
         margin: 0 !important;
-        border: 1px solid #CE8946 !important;
+        border: 2px solid #CE8946 !important;
         background: transparent !important;
         color: #CE8946 !important;
+        font-weight: 600 !important;
+        white-space: nowrap !important;
     }
     
     .admin-btn:hover {
         background: #CE8946 !important;
         color: black !important;
+        transform: translateY(-2px) !important;
     }
     
+    /* Logout button - WHITE matching others */
     .logout-btn {
-        font-size: 0.6rem !important;
-        padding: 0.25rem 0.5rem !important;
-        border-radius: 12px !important;
+        font-size: 0.8rem !important;
+        padding: 0.4rem 0.8rem !important;
+        border-radius: 20px !important;
         margin: 0 !important;
-        border: 1px solid white !important;
+        border: 2px solid white !important;
         background: transparent !important;
         color: white !important;
+        font-weight: 600 !important;
+        white-space: nowrap !important;
     }
     
     .logout-btn:hover {
         background: white !important;
         color: black !important;
+        transform: translateY(-2px) !important;
     }
 
-    /* Override any fixed positioning for auth buttons */
-    .auth-buttons .login-btn,
-    .auth-buttons .signup-btn,
-    .auth-buttons .admin-btn,
-    .auth-buttons .logout-btn {
+    /* FIX 6: Ensure all nav buttons stay fixed */
+    .pricing-calc-btn,
+    .login-btn,
+    .signup-btn,
+    .customer-welcome,
+    .admin-btn,
+    .logout-btn {
         position: static !important;
         left: auto !important;
         top: auto !important;
     }
 
-    /* FIX 3: Calendar Month Navigation Mobile */
+    /* FIX 7: Calendar Month Navigation Mobile */
     .d-flex.justify-content-between.align-items-center.mb-4 {
         display: flex !important;
         justify-content: space-between !important;
@@ -1835,15 +1866,15 @@ margin-left: 200px !important;
         flex: 1 !important;
     }
 
-    /* FIX 4: Calendar Container Mobile */
+    /* FIX 8: Calendar Container Mobile - Account for fixed header */
     .text-center {
         padding: 0 0.5rem !important;
     }
     
-    /* Calendar grid container */
+    /* Calendar grid container - more top margin for fixed nav */
     .container {
         padding: 0 10px !important;
-        margin-top: 70px !important;
+        margin-top: 80px !important;
     }
     
     /* Service title mobile */
@@ -1862,7 +1893,7 @@ margin-left: 200px !important;
         text-transform: uppercase !important;
     }
 
-    /* FIX 5: Back Button Mobile */
+    /* FIX 9: Back Button Mobile */
     .back-button, .back-button-blue {
         width: 35px !important;
         height: 35px !important;
@@ -1873,7 +1904,7 @@ margin-left: 200px !important;
         z-index: 1002 !important;
     }
 
-    /* FIX 6: Prevent horizontal scroll */
+    /* FIX 10: Prevent horizontal scroll */
     * {
         box-sizing: border-box !important;
     }
@@ -1893,13 +1924,20 @@ margin-left: 200px !important;
         padding-right: 2px !important;
     }
 
-    /* FIX 7: AMR Logo Mobile */
+    /* FIX 11: AMR Logo Mobile */
     .text-center.mb-4 img, 
     .text-center.mb-5 img {
         max-width: 100px !important;
         height: auto !important;
         border-radius: 15px !important;
         margin-bottom: 1rem !important;
+    }
+
+    /* FIX 12: Service Cards Mobile - Account for fixed nav */
+    .service-button-custom,
+    .service-option-card,
+    .pressure-washing-card {
+        margin-top: 1rem !important;
     }
 }
 </style>
