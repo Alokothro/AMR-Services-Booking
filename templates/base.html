@@ -1592,7 +1592,7 @@ box-shadow: 0 4px 8px rgba(255, 255, 255, 0.2);
 .auth-buttons {
 margin-left: 200px !important;
 }
-/* COMPACT MOBILE BUTTON FIXES FOR AMR BOOKING APP */
+/* IMPROVED NAVIGATION BUTTONS FOR AMR BOOKING APP */
 
 /* FIX 1: Calendar Column Alignment on Mobile ONLY */
 @media (max-width: 768px) {
@@ -1668,7 +1668,7 @@ margin-left: 200px !important;
         cursor: not-allowed !important;
     }
 
-    /* FIX 2: FIXED Navigation Header - Compact Design */
+    /* FIX 2: FIXED Navigation Header */
     .top-nav {
         position: fixed !important;
         top: 0 !important;
@@ -1692,11 +1692,12 @@ margin-left: 200px !important;
         margin: 0 !important;
     }
     
-    /* FIX 3: Price Calculator - COMPACT, Far Left */
+    /* FIX 3: Price Calculator - Left Side */
     .pricing-calc-section {
         display: flex !important;
         align-items: center !important;
         justify-content: flex-start !important;
+        flex-shrink: 0 !important;
     }
     
     .pricing-calc-btn {
@@ -1725,7 +1726,7 @@ margin-left: 200px !important;
         transform: translateY(-1px) !important;
     }
     
-    /* FIX 4: Auth Buttons - COMPACT, Right Side */
+    /* FIX 4: Auth Buttons - Right Side with Better Spacing */
     .auth-buttons {
         display: flex !important;
         gap: 0.3rem !important;
@@ -1733,9 +1734,11 @@ margin-left: 200px !important;
         align-items: center !important;
         margin: 0 !important;
         flex-wrap: nowrap !important;
+        flex-shrink: 1 !important;
+        min-width: 0 !important;
     }
     
-    /* Login/Signup buttons - SMALLER */
+    /* Login/Signup buttons */
     .login-btn, .signup-btn {
         padding: 0.25rem 0.5rem !important;
         border: 1px solid white !important;
@@ -1749,6 +1752,7 @@ margin-left: 200px !important;
         min-width: auto !important;
         text-align: center !important;
         white-space: nowrap !important;
+        flex-shrink: 0 !important;
     }
     
     .login-btn:hover, .signup-btn:hover {
@@ -1757,31 +1761,37 @@ margin-left: 200px !important;
         transform: translateY(-1px) !important;
     }
     
-    /* FIX 5: User info when logged in - COMPACT */
+    /* FIX 5: User info when logged in - Improved Layout */
     .user-info {
         display: flex !important;
         align-items: center !important;
         justify-content: flex-end !important;
-        gap: 0.25rem !important;
+        gap: 0.3rem !important;
         font-weight: 500 !important;
         color: white !important;
         flex-wrap: nowrap !important;
+        flex-shrink: 1 !important;
+        min-width: 0 !important;
+        max-width: calc(100vw - 150px) !important; /* Reserve space for price calculator */
     }
     
-    /* Welcome button - COMPACT */
+    /* Customer Welcome Button - Bigger, Responsive */
     .customer-welcome {
-        font-size: 0.6rem !important;
-        padding: 0.25rem 0.4rem !important;
-        border-radius: 12px !important;
+        font-size: 0.65rem !important;
+        padding: 0.25rem 0.6rem !important;
+        border-radius: 15px !important;
         cursor: pointer !important;
         transition: all 0.3s ease !important;
         border: 1px solid white !important;
         background: transparent !important;
         color: white !important;
         white-space: nowrap !important;
-        max-width: 70px !important;
         overflow: hidden !important;
         text-overflow: ellipsis !important;
+        max-width: 120px !important; /* Bigger than before */
+        flex-shrink: 1 !important;
+        min-width: 0 !important;
+        font-weight: 500 !important;
     }
     
     .customer-welcome:hover {
@@ -1790,7 +1800,7 @@ margin-left: 200px !important;
         transform: translateY(-1px) !important;
     }
     
-    /* Admin button - VERY COMPACT */
+    /* Admin button - Compact */
     .admin-btn {
         font-size: 0.6rem !important;
         padding: 0.25rem 0.4rem !important;
@@ -1802,6 +1812,7 @@ margin-left: 200px !important;
         font-weight: 500 !important;
         white-space: nowrap !important;
         min-width: auto !important;
+        flex-shrink: 0 !important;
     }
     
     .admin-btn:hover {
@@ -1810,7 +1821,7 @@ margin-left: 200px !important;
         transform: translateY(-1px) !important;
     }
     
-    /* Logout button - COMPACT */
+    /* Logout button */
     .logout-btn {
         font-size: 0.6rem !important;
         padding: 0.25rem 0.4rem !important;
@@ -1821,6 +1832,7 @@ margin-left: 200px !important;
         color: white !important;
         font-weight: 500 !important;
         white-space: nowrap !important;
+        flex-shrink: 0 !important;
     }
     
     .logout-btn:hover {
@@ -1829,7 +1841,37 @@ margin-left: 200px !important;
         transform: translateY(-1px) !important;
     }
 
-    /* FIX 6: Ensure all nav buttons stay fixed */
+    /* FIX 6: Hide Welcome Button for Admin Users */
+    /* This will be handled in JavaScript - admin users will only show ADMIN + Logout */
+
+    /* FIX 7: Responsive Adjustments for Very Small Screens */
+    @media (max-width: 380px) {
+        .customer-welcome {
+            max-width: 80px !important;
+            font-size: 0.6rem !important;
+        }
+        
+        .auth-buttons {
+            gap: 0.2rem !important;
+        }
+        
+        .user-info {
+            max-width: calc(100vw - 130px) !important;
+        }
+    }
+    
+    @media (max-width: 320px) {
+        .customer-welcome {
+            max-width: 60px !important;
+            font-size: 0.55rem !important;
+        }
+        
+        .user-info {
+            max-width: calc(100vw - 110px) !important;
+        }
+    }
+
+    /* FIX 8: Ensure all nav buttons stay fixed */
     .pricing-calc-btn,
     .login-btn,
     .signup-btn,
@@ -1841,7 +1883,7 @@ margin-left: 200px !important;
         top: auto !important;
     }
 
-    /* FIX 7: Calendar Month Navigation Mobile */
+    /* FIX 9: Calendar Month Navigation Mobile */
     .d-flex.justify-content-between.align-items-center.mb-4 {
         display: flex !important;
         justify-content: space-between !important;
@@ -1870,12 +1912,12 @@ margin-left: 200px !important;
         flex: 1 !important;
     }
 
-    /* FIX 8: Calendar Container Mobile - Account for smaller fixed header */
+    /* FIX 10: Calendar Container Mobile */
     .text-center {
         padding: 0 0.5rem !important;
     }
     
-    /* Calendar grid container - less top margin for smaller nav */
+    /* Calendar grid container */
     .container {
         padding: 0 10px !important;
         margin-top: 60px !important;
@@ -1897,7 +1939,7 @@ margin-left: 200px !important;
         text-transform: uppercase !important;
     }
 
-    /* FIX 9: Back Button Mobile */
+    /* FIX 11: Back Button Mobile */
     .back-button, .back-button-blue {
         width: 30px !important;
         height: 30px !important;
@@ -1908,7 +1950,7 @@ margin-left: 200px !important;
         z-index: 1002 !important;
     }
 
-    /* FIX 10: Prevent horizontal scroll */
+    /* FIX 12: Prevent horizontal scroll */
     * {
         box-sizing: border-box !important;
     }
@@ -1928,7 +1970,7 @@ margin-left: 200px !important;
         padding-right: 2px !important;
     }
 
-    /* FIX 11: AMR Logo Mobile */
+    /* FIX 13: AMR Logo Mobile */
     .text-center.mb-4 img, 
     .text-center.mb-5 img {
         max-width: 100px !important;
@@ -1937,34 +1979,14 @@ margin-left: 200px !important;
         margin-bottom: 1rem !important;
     }
 
-    /* FIX 12: Service Cards Mobile - Account for smaller fixed nav */
+    /* FIX 14: Service Cards Mobile */
     .service-button-custom,
     .service-option-card,
     .pressure-washing-card {
         margin-top: 1rem !important;
     }
-
-    /* FIX 13: Force compact layout on very small screens */
-    @media (max-width: 400px) {
-        .customer-welcome {
-            max-width: 50px !important;
-        }
-        
-        .auth-buttons {
-            gap: 0.2rem !important;
-        }
-        
-        .pricing-calc-btn {
-            font-size: 0.6rem !important;
-            padding: 0.2rem 0.4rem !important;
-        }
-        
-        .login-btn, .signup-btn, .admin-btn, .logout-btn {
-            font-size: 0.55rem !important;
-            padding: 0.2rem 0.35rem !important;
-        }
-    }
 }
+
 </style>
 </head>
 <body>
@@ -3491,6 +3513,57 @@ function clearPriceDisplay() {
     const existingButton = document.querySelector('.calc-book-btn');
     if (existingResult) existingResult.remove();
     if (existingButton) existingButton.remove();
+}
+// Updated updateAuthDisplay function - replace the existing one in base.html
+
+function updateAuthDisplay() {
+    const pricingSection = document.querySelector('.pricing-calc-section');
+    const authButtons = document.querySelector('.auth-buttons');
+    
+    const isHomePage = document.body.classList.contains('home-page') || 
+                      document.querySelector('.home-page') !== null ||
+                      window.location.pathname === '/' ||
+                      window.location.pathname === '/index';
+    
+    // Update pricing calculator section (left side)
+    if (pricingSection) {
+        const pricingButton = isHomePage ? 
+            '<button class="pricing-calc-btn" data-bs-toggle="modal" data-bs-target="#pricingModal" style="display: inline-block;">Price Calculator</button>' : '';
+        pricingSection.innerHTML = pricingButton;
+    }
+    
+    // Update auth buttons (right side)
+    if (authButtons) {
+        if (currentUser) {
+            if (isAdmin) {
+                // Admin users: Only show ADMIN + Logout (no welcome button)
+                authButtons.innerHTML = `
+                    <div class="user-info d-flex align-items-center">
+                        <button class="admin-btn" onclick="toggleAdminPanel()">ADMIN</button>
+                        <button class="logout-btn" onclick="logout()">Logout</button>
+                    </div>
+                `;
+            } else {
+                // Regular customers: Show Welcome + Logout (bigger welcome button)
+                const customerName = currentUser.firstName || 'Customer';
+                authButtons.innerHTML = `
+                    <div class="user-info d-flex align-items-center">
+                        <span class="customer-welcome" onclick="toggleCustomerPanel()" title="Welcome, ${customerName}!">Welcome, ${customerName}!</span>
+                        <button class="logout-btn" onclick="logout()">Logout</button>
+                    </div>
+                `;
+            }
+        } else {
+            // Not logged in: Show Login + Signup
+            authButtons.innerHTML = `
+                <button class="login-btn" data-bs-toggle="modal" data-bs-target="#loginModal">LOGIN</button>
+                <button class="signup-btn" data-bs-toggle="modal" data-bs-target="#signupModal">SIGNUP</button>
+            `;
+        }
+    }
+    
+    // Reapply color classes after updating HTML
+    setAuthButtonColors();
 }
 // Continue with your existing JavaScript functions...
 
