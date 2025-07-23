@@ -4,3 +4,4 @@ Flask-SQLAlchemy
 Flask-Login
 APScheduler
 email-validator
+pytz==2023.3

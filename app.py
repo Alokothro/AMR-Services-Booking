@@ -26,6 +26,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, UserMixin, login_user, logout_user, login_required, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime, date, time, timedelta
+import pytz
 import os
 import smtplib
 import ssl
@@ -57,11 +58,23 @@ app.config['MAIL_PASSWORD'] = 'your-app-password'     # Your email app password
 app.config['MAIL_USE_TLS'] = True
 
 # Business Configuration
+# Eastern timezone configuration for Charlotte/Carolinas area
+EASTERN_TZ = pytz.timezone('US/Eastern')
+
 BUSINESS_HOURS = {
-    'start': time(6, 0),   # 6:00 AM
-    'end': time(20, 0),    # 8:00 PM
-    'timezone': 'Eastern'
+    'start': time(6, 0),   # 6:00 AM Eastern
+    'end': time(20, 0),    # 8:00 PM Eastern
+    'timezone': 'US/Eastern'
 }
+def get_current_eastern_time():
+    """Get current time in Eastern timezone"""
+    utc_now = datetime.utcnow().replace(tzinfo=pytz.UTC)
+    eastern_now = utc_now.astimezone(EASTERN_TZ)
+    return eastern_now
+
+def get_current_eastern_date():
+    """Get current date in Eastern timezone"""
+    return get_current_eastern_time().date()
 
 # Initialize database and login manager
 db = SQLAlchemy(app)
@@ -335,9 +348,10 @@ def inject_google_maps_key():
 def get_available_time_slots(selected_date, service_duration_hours, service_type=None):
     """
     Calculate available time slots for a given date and service duration.
-    Business hours: 6:00 AM to 8:00 PM
+    Updated to use Eastern timezone.
+    Business hours: 6:00 AM to 8:00 PM Eastern
     Time slots: 30-minute increments
-    Minimum 2-hour advance booking required
+    Minimum 2-hour advance booking required (Eastern time)
     
     Args:
         selected_date (date): The date to check availability
@@ -348,20 +362,23 @@ def get_available_time_slots(selected_date, service_duration_hours, service_type
         list: Available time slots as time objects
     """
     
+    # Get current Eastern time
+    eastern_now = get_current_eastern_time()
+    today_eastern = eastern_now.date()
+    
     # Don't allow booking for past dates
-    if selected_date < date.today():
+    if selected_date < today_eastern:
         return []
     
     # Get existing bookings for this date
     existing_bookings = Booking.query.filter_by(booking_date=selected_date).all()
     
-    # Calculate minimum booking time (2 hours from now)
-    now = datetime.now()
-    min_booking_time = now + timedelta(hours=2)
+    # Calculate minimum booking time (2 hours from now in Eastern time)
+    min_booking_time = eastern_now + timedelta(hours=2)
     
     # If booking for today, use minimum booking time
     # If booking for future date, start from business hours
-    if selected_date == date.today():
+    if selected_date == today_eastern:
         # Round up to next 30-minute slot
         minutes = min_booking_time.minute
         if minutes == 0:
@@ -373,7 +390,7 @@ def get_available_time_slots(selected_date, service_duration_hours, service_type
             next_hour = min_booking_time.replace(minute=0, second=0, microsecond=0) + timedelta(hours=1)
             earliest_time = next_hour.time()
         
-        # Don't allow booking before business hours start (6 AM)
+        # Don't allow booking before business hours start (6 AM Eastern)
         business_start = BUSINESS_HOURS['start']  # 6:00 AM
         if earliest_time < business_start:
             earliest_time = business_start
@@ -423,6 +440,7 @@ def get_available_time_slots(selected_date, service_duration_hours, service_type
 def is_date_available(check_date):
     """
     Check if a date has any available time slots.
+    Updated to use Eastern timezone.
     
     Args:
         check_date (date): Date to check
@@ -430,7 +448,9 @@ def is_date_available(check_date):
     Returns:
         bool: True if date has available slots, False otherwise
     """
-    if check_date < date.today():
+    today_eastern = get_current_eastern_date()
+    
+    if check_date < today_eastern:
         return False
     
     # Check with minimum service duration (1.5 hours for landscaping)
@@ -1237,6 +1257,7 @@ def calendar(service_id):
 def calendar_month(service_id, year, month):
     """
     Calendar page with month navigation support.
+    Updated to use Eastern timezone.
     """
     service = ServiceType.query.get_or_404(service_id)
     
@@ -1270,8 +1291,8 @@ def calendar_month(service_id, year, month):
                 check_date = date(year, month, day)
                 available_dates[day] = is_date_available(check_date)
     
-    # Get today's date for highlighting
-    today = date.today()
+    # Get today's date in Eastern timezone for highlighting
+    today_eastern = get_current_eastern_date()
     
     return render_template('calendar.html', 
                          service=service,
@@ -1283,9 +1304,9 @@ def calendar_month(service_id, year, month):
                          prev_year=prev_year,
                          next_month=next_month,
                          next_year=next_year,
-                         today_year=today.year,
-                         today_month=today.month,
-                         today_day=today.day,
+                         today_year=today_eastern.year,
+                         today_month=today_eastern.month,
+                         today_day=today_eastern.day,
                          month_name=cal.month_name[month])
 
 @app.route('/time-selection/<int:year>/<int:month>/<int:day>')
