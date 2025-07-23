@@ -290,8 +290,8 @@ python app.py
 
 ### **Default Admin Access**
 - **Email**: admin@amrservices.com
-- **Password**: admin123
-- ⚠️ **Change in production environment**
+- **Demo Access**: Contact alokothro@gmail.com for credentials/password
+- **Security**: Production environment uses encrypted passwords and secure authentication
 
 ---
 
