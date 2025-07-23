@@ -1592,6 +1592,286 @@ box-shadow: 0 4px 8px rgba(255, 255, 255, 0.2);
 .auth-buttons {
 margin-left: 200px !important;
 }
+/* MOBILE RESPONSIVE FIXES FOR AMR BOOKING APP */
+/* Add these styles to your base.html file in the existing <style> section */
+
+/* FIX 1: Calendar Column Alignment on Mobile */
+@media (max-width: 768px) {
+    
+    /* Calendar Grid Fix */
+    .row.text-center.mb-2 {
+        display: grid !important;
+        grid-template-columns: repeat(7, 1fr) !important;
+        gap: 2px !important;
+        margin-bottom: 8px !important;
+        align-items: center !important;
+    }
+    
+    /* Calendar Header Days Fix */
+    .row.text-center.mb-4 {
+        display: grid !important;
+        grid-template-columns: repeat(7, 1fr) !important;
+        gap: 2px !important;
+        margin-bottom: 16px !important;
+        text-align: center !important;
+    }
+    
+    /* Calendar Day Buttons */
+    .calendar-day {
+        width: 35px !important;
+        height: 35px !important;
+        border-radius: 50% !important;
+        border: none !important;
+        margin: 1px !important;
+        background-color: white !important;
+        color: #333 !important;
+        font-weight: 500 !important;
+        font-size: 14px !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+    }
+    
+    /* Available days - Landscaping */
+    .calendar-day.available.calendar-landscaping {
+        background-color: #035F0A !important;
+        color: white !important;
+        cursor: pointer !important;
+    }
+    
+    .calendar-day.available.calendar-landscaping:hover {
+        background-color: #024A08 !important;
+    }
+    
+    /* Available days - Pressure Washing */
+    .calendar-day.available.calendar-pressure {
+        background-color: #7EE0FF !important;
+        color: black !important;
+        cursor: pointer !important;
+    }
+    
+    .calendar-day.available.calendar-pressure:hover {
+        background-color: #5AD6FF !important;
+    }
+    
+    /* Today highlight */
+    .calendar-day.today {
+        background-color: #FFD700 !important;
+        color: black !important;
+        font-weight: bold !important;
+        border: 2px solid white !important;
+    }
+    
+    /* Unavailable days */
+    .calendar-day.unavailable {
+        background-color: #e9ecef !important;
+        color: #6c757d !important;
+        cursor: not-allowed !important;
+    }
+}
+
+/* FIX 2: Navigation Header Position and Centering */
+.top-nav {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    width: 100% !important;
+    z-index: 1000 !important;
+    padding: 1rem !important;
+    background: rgba(0, 0, 0, 0.9) !important;
+    backdrop-filter: blur(10px) !important;
+}
+
+.nav-container {
+    display: flex !important;
+    justify-content: center !important; /* Center the content */
+    align-items: center !important;
+    width: 100% !important;
+    max-width: 1200px !important;
+    margin: 0 auto !important;
+    position: relative !important;
+}
+
+/* FIX 3: Auth Buttons Mobile Positioning */
+@media (max-width: 768px) {
+    .nav-container {
+        justify-content: center !important;
+        padding: 0 1rem !important;
+    }
+    
+    /* Hide pricing calculator on mobile or position it differently */
+    .pricing-calc-btn {
+        display: none !important; /* Hide on mobile to avoid clutter */
+    }
+    
+    /* Center auth buttons */
+    .auth-buttons {
+        display: flex !important;
+        gap: 1rem !important;
+        justify-content: center !important;
+        align-items: center !important;
+        margin: 0 !important; /* Remove auto margins */
+    }
+    
+    /* Auth button styling for mobile */
+    .login-btn, .signup-btn {
+        padding: 0.5rem 1.2rem !important;
+        border: 2px solid !important;
+        background: transparent !important;
+        font-weight: 600 !important;
+        border-radius: 25px !important;
+        cursor: pointer !important;
+        transition: all 0.3s ease !important;
+        border-color: white !important;
+        color: white !important;
+        font-size: 0.9rem !important;
+        min-width: 80px !important;
+        text-align: center !important;
+    }
+    
+    .login-btn:hover, .signup-btn:hover {
+        background-color: white !important;
+        color: black !important;
+        transform: translateY(-2px) !important;
+    }
+    
+    /* User info display when logged in - mobile */
+    .user-info {
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        flex-wrap: wrap !important;
+        gap: 0.5rem !important;
+        font-weight: 600 !important;
+        font-size: 0.85rem !important;
+        color: white !important;
+        text-align: center !important;
+    }
+    
+    .customer-welcome {
+        font-size: 0.8rem !important;
+        padding: 0.3rem 0.8rem !important;
+        border-radius: 15px !important;
+        cursor: pointer !important;
+        transition: all 0.3s ease !important;
+    }
+    
+    .admin-btn, .logout-btn {
+        font-size: 0.7rem !important;
+        padding: 0.3rem 0.8rem !important;
+        border-radius: 15px !important;
+        margin: 0.2rem !important;
+    }
+}
+
+/* FIX 4: Calendar Month Navigation Mobile */
+@media (max-width: 768px) {
+    /* Month navigation */
+    .d-flex.justify-content-between.align-items-center.mb-4 {
+        display: flex !important;
+        justify-content: space-between !important;
+        align-items: center !important;
+        margin-bottom: 1rem !important;
+        padding: 0 1rem !important;
+    }
+    
+    /* Month navigation buttons */
+    .btn.btn-outline-light {
+        padding: 0.5rem 1rem !important;
+        font-size: 1.2rem !important;
+        border-radius: 50% !important;
+        width: 45px !important;
+        height: 45px !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+    }
+    
+    /* Month title */
+    h4 {
+        font-size: 1.3rem !important;
+        margin: 0 !important;
+        text-align: center !important;
+        flex: 1 !important;
+    }
+}
+
+/* FIX 5: Calendar Container Mobile */
+@media (max-width: 768px) {
+    /* Calendar section */
+    .text-center {
+        padding: 0 0.5rem !important;
+    }
+    
+    /* Calendar grid container */
+    .container {
+        padding: 0 10px !important;
+        margin-top: 80px !important; /* Account for fixed header */
+    }
+    
+    /* Service title mobile */
+    .landscaping-title, .pressure-washing-title {
+        font-size: 1.5rem !important;
+        margin-bottom: 1rem !important;
+        text-align: center !important;
+        padding: 0 1rem !important;
+    }
+    
+    /* Calendar day names header */
+    .row.text-center.mb-4 small {
+        font-size: 0.7rem !important;
+        color: #999 !important;
+        font-weight: 600 !important;
+        text-transform: uppercase !important;
+    }
+}
+
+/* FIX 6: Back Button Mobile */
+@media (max-width: 768px) {
+    .back-button, .back-button-blue {
+        width: 40px !important;
+        height: 40px !important;
+        font-size: 1rem !important;
+        position: fixed !important;
+        top: 0.8rem !important;
+        left: 1rem !important;
+        z-index: 1001 !important;
+    }
+}
+
+/* FIX 7: Prevent horizontal scroll */
+@media (max-width: 768px) {
+    * {
+        box-sizing: border-box !important;
+    }
+    
+    html, body {
+        overflow-x: hidden !important;
+        width: 100% !important;
+    }
+    
+    .row {
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+    }
+    
+    .col, [class*="col-"] {
+        padding-left: 2px !important;
+        padding-right: 2px !important;
+    }
+}
+
+/* FIX 8: AMR Logo Mobile */
+@media (max-width: 768px) {
+    .text-center.mb-4 img, 
+    .text-center.mb-5 img {
+        max-width: 100px !important;
+        height: auto !important;
+        border-radius: 15px !important;
+        margin-bottom: 1rem !important;
+    }
+}
 </style>
 </head>
 <body>
