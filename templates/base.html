@@ -1592,8 +1592,8 @@ box-shadow: 0 4px 8px rgba(255, 255, 255, 0.2);
 .auth-buttons {
 margin-left: 200px !important;
 }
-/* MOBILE-ONLY RESPONSIVE FIXES FOR AMR BOOKING APP */
-/* These fixes will ONLY apply to screens 768px and smaller */
+/* MOBILE RESPONSIVE FIXES FOR AMR BOOKING APP */
+/* Updated version with proper navigation layout */
 
 /* FIX 1: Calendar Column Alignment on Mobile ONLY */
 @media (max-width: 768px) {
@@ -1669,79 +1669,141 @@ margin-left: 200px !important;
         cursor: not-allowed !important;
     }
 
-    /* FIX 2: Navigation Header - MOBILE ONLY */
+    /* FIX 2: Mobile Navigation Layout */
     .top-nav {
         background: rgba(0, 0, 0, 0.9) !important;
         backdrop-filter: blur(10px) !important;
+        padding: 0.8rem 1rem !important;
     }
 
     .nav-container {
-        justify-content: center !important;
-        padding: 0 1rem !important;
-    }
-    
-    /* Hide pricing calculator on mobile to avoid clutter */
-    .pricing-calc-btn {
-        display: none !important;
-    }
-    
-    /* Center auth buttons on mobile */
-    .auth-buttons {
         display: flex !important;
-        gap: 1rem !important;
-        justify-content: center !important;
+        justify-content: space-between !important;
         align-items: center !important;
-        margin: 0 !important;
+        width: 100% !important;
+        padding: 0 !important;
     }
     
-    /* Auth button styling for mobile */
-    .login-btn, .signup-btn {
-        padding: 0.5rem 1.2rem !important;
-        border: 2px solid !important;
-        background: transparent !important;
-        font-weight: 600 !important;
-        border-radius: 25px !important;
+    /* Price Calculator - Smaller on Left */
+    .pricing-calc-section {
+        display: flex !important;
+        align-items: center !important;
+    }
+    
+    .pricing-calc-btn {
+        display: inline-block !important;
+        background-color: transparent !important;
+        color: white !important;
+        border: 1px solid white !important;
+        padding: 0.3rem 0.6rem !important;
+        border-radius: 15px !important;
+        font-weight: 500 !important;
         cursor: pointer !important;
         transition: all 0.3s ease !important;
-        border-color: white !important;
+        font-size: 0.7rem !important;
+        white-space: nowrap !important;
+        position: static !important;
+        left: auto !important;
+        top: auto !important;
+        width: auto !important;
+        height: auto !important;
+    }
+    
+    .pricing-calc-btn:hover {
+        background-color: white !important;
+        color: black !important;
+    }
+    
+    /* Auth Buttons - Smaller on Right */
+    .auth-buttons {
+        display: flex !important;
+        gap: 0.4rem !important;
+        justify-content: flex-end !important;
+        align-items: center !important;
+        margin: 0 !important;
+        flex-wrap: wrap !important;
+    }
+    
+    /* Login/Signup buttons - smaller */
+    .login-btn, .signup-btn {
+        padding: 0.3rem 0.8rem !important;
+        border: 1px solid white !important;
+        background: transparent !important;
+        font-weight: 500 !important;
+        border-radius: 15px !important;
+        cursor: pointer !important;
+        transition: all 0.3s ease !important;
         color: white !important;
-        font-size: 0.9rem !important;
-        min-width: 80px !important;
+        font-size: 0.7rem !important;
+        min-width: 60px !important;
         text-align: center !important;
     }
     
     .login-btn:hover, .signup-btn:hover {
         background-color: white !important;
         color: black !important;
-        transform: translateY(-2px) !important;
     }
     
-    /* User info display when logged in - mobile */
+    /* User info when logged in - smaller and right-aligned */
     .user-info {
         display: flex !important;
         align-items: center !important;
-        justify-content: center !important;
-        flex-wrap: wrap !important;
-        gap: 0.5rem !important;
-        font-weight: 600 !important;
-        font-size: 0.85rem !important;
+        justify-content: flex-end !important;
+        gap: 0.3rem !important;
+        font-weight: 500 !important;
+        font-size: 0.7rem !important;
         color: white !important;
-        text-align: center !important;
+        flex-wrap: wrap !important;
     }
     
     .customer-welcome {
-        font-size: 0.8rem !important;
-        padding: 0.3rem 0.8rem !important;
-        border-radius: 15px !important;
+        font-size: 0.65rem !important;
+        padding: 0.25rem 0.5rem !important;
+        border-radius: 12px !important;
         cursor: pointer !important;
         transition: all 0.3s ease !important;
+        border: 1px solid rgba(255, 255, 255, 0.3) !important;
+        background: rgba(255, 255, 255, 0.1) !important;
     }
     
-    .admin-btn, .logout-btn {
-        font-size: 0.7rem !important;
-        padding: 0.3rem 0.8rem !important;
-        border-radius: 15px !important;
-        margin: 0.2rem !important;
+    .admin-btn {
+        font-size: 0.6rem !important;
+        padding: 0.25rem 0.5rem !important;
+        border-radius: 12px !important;
+        margin: 0 !important;
+        border: 1px solid #CE8946 !important;
+        background: transparent !important;
+        color: #CE8946 !important;
+    }
+    
+    .admin-btn:hover {
+        background: #CE8946 !important;
+        color: black !important;
+    }
+    
+    .logout-btn {
+        font-size: 0.6rem !important;
+        padding: 0.25rem 0.5rem !important;
+        border-radius: 12px !important;
+        margin: 0 !important;
+        border: 1px solid white !important;
+        background: transparent !important;
+        color: white !important;
+    }
+    
+    .logout-btn:hover {
+        background: white !important;
+        color: black !important;
+    }
+
+    /* Override any fixed positioning for auth buttons */
+    .auth-buttons .login-btn,
+    .auth-buttons .signup-btn,
+    .auth-buttons .admin-btn,
+    .auth-buttons .logout-btn {
+        position: static !important;
+        left: auto !important;
+        top: auto !important;
     }
 
     /* FIX 3: Calendar Month Navigation Mobile */
@@ -1781,7 +1843,7 @@ margin-left: 200px !important;
     /* Calendar grid container */
     .container {
         padding: 0 10px !important;
-        margin-top: 80px !important;
+        margin-top: 70px !important;
     }
     
     /* Service title mobile */
@@ -1802,13 +1864,13 @@ margin-left: 200px !important;
 
     /* FIX 5: Back Button Mobile */
     .back-button, .back-button-blue {
-        width: 40px !important;
-        height: 40px !important;
-        font-size: 1rem !important;
+        width: 35px !important;
+        height: 35px !important;
+        font-size: 0.9rem !important;
         position: fixed !important;
-        top: 0.8rem !important;
-        left: 1rem !important;
-        z-index: 1001 !important;
+        top: 0.7rem !important;
+        left: 0.5rem !important;
+        z-index: 1002 !important;
     }
 
     /* FIX 6: Prevent horizontal scroll */
