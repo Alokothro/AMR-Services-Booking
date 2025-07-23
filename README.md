@@ -9,6 +9,9 @@ A full-stack web application for a real landscaping and pressure washing busines
 
 ## 🚀 Live Demo
 **Production URL**: [https://amr-services-booking.onrender.com](https://amr-services-booking.onrender.com)
+- 📱 **Mobile-First Design** - Scan QR code below to test on your device
+
+[<img width="150" alt="qr-code" src="https://github.com/user-attachments/assets/b0e86e57-a362-4783-9876-5e0f463ec69b" />](https://amr-services-booking.onrender.com)
 
 ## 👨‍💻 Developer
 **Alok Patel** - Computer Science Student | Software Engineering
