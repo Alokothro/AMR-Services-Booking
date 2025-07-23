@@ -2755,20 +2755,26 @@ case 'Deck & Fence Pressure Washing':
     // Update auth buttons (right side)
     if (authButtons) {
         if (currentUser) {
-            const adminButton = isAdmin ? 
-                '<button class="admin-btn" onclick="toggleAdminPanel()">ADMIN</button>' : '';
-            
-            const customerName = isAdmin ? 'Admin' : currentUser.firstName;
-            const welcomeClick = isAdmin ? 'toggleAdminPanel()' : 'toggleCustomerPanel()';
-            
-            authButtons.innerHTML = `
-                <div class="user-info d-flex align-items-center">
-                    <span class="customer-welcome" onclick="${welcomeClick}">Welcome, ${customerName}!</span>
-                    ${adminButton}
-                    <button class="logout-btn" onclick="logout()">Logout</button>
-                </div>
-            `;
+            if (isAdmin) {
+                // Admin users: Only show ADMIN + Logout (no welcome button)
+                authButtons.innerHTML = `
+                    <div class="user-info d-flex align-items-center">
+                        <button class="admin-btn" onclick="toggleAdminPanel()">ADMIN</button>
+                        <button class="logout-btn" onclick="logout()">Logout</button>
+                    </div>
+                `;
+            } else {
+                // Regular customers: Show Welcome + Logout (bigger welcome button)
+                const customerName = currentUser.firstName || 'Customer';
+                authButtons.innerHTML = `
+                    <div class="user-info d-flex align-items-center">
+                        <span class="customer-welcome" onclick="toggleCustomerPanel()" title="Welcome, ${customerName}!">Welcome, ${customerName}!</span>
+                        <button class="logout-btn" onclick="logout()">Logout</button>
+                    </div>
+                `;
+            }
         } else {
+            // Not logged in: Show Login + Signup
             authButtons.innerHTML = `
                 <button class="login-btn" data-bs-toggle="modal" data-bs-target="#loginModal">LOGIN</button>
                 <button class="signup-btn" data-bs-toggle="modal" data-bs-target="#signupModal">SIGNUP</button>
@@ -3514,57 +3520,7 @@ function clearPriceDisplay() {
     if (existingResult) existingResult.remove();
     if (existingButton) existingButton.remove();
 }
-// Updated updateAuthDisplay function - replace the existing one in base.html
 
-function updateAuthDisplay() {
-    const pricingSection = document.querySelector('.pricing-calc-section');
-    const authButtons = document.querySelector('.auth-buttons');
-    
-    const isHomePage = document.body.classList.contains('home-page') || 
-                      document.querySelector('.home-page') !== null ||
-                      window.location.pathname === '/' ||
-                      window.location.pathname === '/index';
-    
-    // Update pricing calculator section (left side)
-    if (pricingSection) {
-        const pricingButton = isHomePage ? 
-            '<button class="pricing-calc-btn" data-bs-toggle="modal" data-bs-target="#pricingModal" style="display: inline-block;">Price Calculator</button>' : '';
-        pricingSection.innerHTML = pricingButton;
-    }
-    
-    // Update auth buttons (right side)
-    if (authButtons) {
-        if (currentUser) {
-            if (isAdmin) {
-                // Admin users: Only show ADMIN + Logout (no welcome button)
-                authButtons.innerHTML = `
-                    <div class="user-info d-flex align-items-center">
-                        <button class="admin-btn" onclick="toggleAdminPanel()">ADMIN</button>
-                        <button class="logout-btn" onclick="logout()">Logout</button>
-                    </div>
-                `;
-            } else {
-                // Regular customers: Show Welcome + Logout (bigger welcome button)
-                const customerName = currentUser.firstName || 'Customer';
-                authButtons.innerHTML = `
-                    <div class="user-info d-flex align-items-center">
-                        <span class="customer-welcome" onclick="toggleCustomerPanel()" title="Welcome, ${customerName}!">Welcome, ${customerName}!</span>
-                        <button class="logout-btn" onclick="logout()">Logout</button>
-                    </div>
-                `;
-            }
-        } else {
-            // Not logged in: Show Login + Signup
-            authButtons.innerHTML = `
-                <button class="login-btn" data-bs-toggle="modal" data-bs-target="#loginModal">LOGIN</button>
-                <button class="signup-btn" data-bs-toggle="modal" data-bs-target="#signupModal">SIGNUP</button>
-            `;
-        }
-    }
-    
-    // Reapply color classes after updating HTML
-    setAuthButtonColors();
-}
 // Continue with your existing JavaScript functions...
 
 // Run on page load and when needed
