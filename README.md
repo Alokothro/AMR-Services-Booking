@@ -15,6 +15,7 @@ A full-stack web application for a real landscaping and pressure washing busines
 
 ## 👨‍💻 Developer
 **Alok Patel** - Computer Science Student | Software Engineering
+
 📧 Email: alokothro@gmail.com  
 🔗 GitHub: [@Alokothro](https://github.com/Alokothro)
 
