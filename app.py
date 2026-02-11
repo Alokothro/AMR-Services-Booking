@@ -5,6 +5,7 @@ AMR Landscaping & Pressure Washing Booking System
 A Flask-based web application for scheduling landscaping and pressure washing services.
 Now includes full user authentication and database storage for real business use.
 
+
 Features:
 - User registration and login system
 - Service selection (Landscaping vs Pressure Washing)
